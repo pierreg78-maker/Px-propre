@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toilettes proches</title>
+<title>Services à proximité</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   * { box-sizing: border-box; }
@@ -33,6 +33,62 @@
     background: #eef1ea;
     border-bottom: 1px solid #dde2d8;
   }
+
+  /* Onglets de categorie */
+  #category-tabs {
+    display: flex;
+    background: white;
+    border-bottom: 1px solid #dde2d8;
+  }
+  .cat-tab {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    background: white;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #667;
+    cursor: pointer;
+  }
+  .cat-tab.active {
+    color: #2f5233;
+    border-bottom-color: #2f5233;
+  }
+
+  /* Filtres dechets (types + dechetteries) */
+  #dechets-filters {
+    display: none;
+    padding: 10px 20px;
+    background: white;
+    border-bottom: 1px solid #dde2d8;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #dechets-filters.visible { display: flex; }
+  .type-chip {
+    padding: 6px 12px;
+    border: 2px solid #6b7f6d;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    background: white;
+    color: #445;
+    cursor: pointer;
+    user-select: none;
+  }
+  .type-chip.active {
+    background: #6b7f6d;
+    color: white;
+  }
+  .type-chip.dechetterie-chip {
+    border-color: #8a5a2f;
+  }
+  .type-chip.dechetterie-chip.active {
+    background: #8a5a2f;
+    color: white;
+  }
+
   #radius-controls {
     display: flex;
     gap: 8px;
@@ -71,6 +127,12 @@
     border-left: 4px solid #2f5233;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
+  .result-card.dechetterie {
+    border-left-color: #8a5a2f;
+  }
+  .result-card.point_apport {
+    border-left-color: #6b7f6d;
+  }
   .result-card .type {
     font-weight: 700;
     font-size: 0.95rem;
@@ -79,6 +141,19 @@
     font-size: 0.85rem;
     color: #555;
     margin: 4px 0;
+  }
+  .result-card .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 6px 0;
+  }
+  .result-card .tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #eef1ea;
+    color: #445;
   }
   .result-card .distance {
     font-size: 0.85rem;
@@ -96,11 +171,25 @@
 <body>
 
 <header>
-  <h1>Toilettes à proximité</h1>
+  <h1>Services à proximité</h1>
   <p>Basé sur ta position actuelle</p>
 </header>
 
 <div id="status">Localisation en cours...</div>
+
+<div id="category-tabs">
+  <button class="cat-tab active" data-cat="toilettes">🚻 Toilettes</button>
+  <button class="cat-tab" data-cat="dechets">♻️ Déchets</button>
+</div>
+
+<div id="dechets-filters">
+  <span class="type-chip active" data-type="OM">Ordures ménagères</span>
+  <span class="type-chip active" data-type="REC">Recyclables</span>
+  <span class="type-chip active" data-type="VERRE">Verre</span>
+  <span class="type-chip active" data-type="CARTON">Carton</span>
+  <span class="type-chip active" data-type="BIO">Biodéchets</span>
+  <span class="type-chip dechetterie-chip active" data-type="DECHETTERIE">🏭 Déchèteries</span>
+</div>
 
 <div id="radius-controls">
   <button class="radius-btn" data-radius="250">250 m</button>
@@ -119,8 +208,9 @@
 
 // ---------------------------------------------------------------
 // ETAPE 1 : LES DONNEES
-// C'est ici que tu remplaceras par ton vrai CSV (4 lignes, 4 emplacements).
-// Pour l'instant, données fictives à Périgueux pour tester la logique.
+// Deux jeux de donnees separes, un par categorie de service.
+// Remplace par tes vrais CSV quand tu les auras (toilettes deja
+// collectees, dechets en attente de reponse du SMD3 / mairie).
 // ---------------------------------------------------------------
 const toilettes = [
   { id: 1, numero: "3", rue: "Place Francheville", code_postal: "24000", ville: "Périgueux", latitude: 45.1848, longitude: 0.7213, type: "Toilettes publiques accessibles PMR" },
@@ -129,39 +219,54 @@ const toilettes = [
   { id: 4, numero: "1", rue: "Boulevard Georges Saumande", code_postal: "24000", ville: "Périgueux", latitude: 45.1830, longitude: 0.7160, type: "Toilettes publiques" }
 ];
 
+// categorie : "point_apport" ou "dechetterie"
+// dechets   : liste de codes separes par ";" (vide pour une dechetterie,
+//             qui accepte tout). Codes : OM, REC, VERRE, CARTON, BIO
+const dechets = [
+  { id: 1, nom: "Borne Fénelon", numero: "8", rue: "Cours Fénelon", code_postal: "24000", ville: "Périgueux", latitude: 45.1805, longitude: 0.7238, categorie: "point_apport", dechets: "OM;REC;VERRE" },
+  { id: 2, nom: "Borne Taillefer", numero: "12", rue: "Rue Taillefer", code_postal: "24000", ville: "Périgueux", latitude: 45.1872, longitude: 0.7198, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 3, nom: "Borne Foch", numero: "20", rue: "Cours Michel Montaigne", code_postal: "24000", ville: "Périgueux", latitude: 45.1858, longitude: 0.7180, categorie: "point_apport", dechets: "OM;REC;VERRE;CARTON" },
+  { id: 4, nom: "Déchèterie de Boulazac", numero: "", rue: "Route de Brantôme", code_postal: "24750", ville: "Boulazac Isle Manoire", latitude: 45.1660, longitude: 0.7620, categorie: "dechetterie", dechets: "" },
+  { id: 5, nom: "Déchèterie de Marsac-sur-l'Isle", numero: "", rue: "Zone artisanale", code_postal: "24430", ville: "Marsac-sur-l'Isle", latitude: 45.1930, longitude: 0.6640, categorie: "dechetterie", dechets: "" },
+  { id: 6, nom: "Déchèterie de Coulounieix-Chamiers", numero: "", rue: "Route de Bergerac", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1740, longitude: 0.6980, categorie: "dechetterie", dechets: "" }
+];
+
+const typeLabels = {
+  OM: "Ordures ménagères",
+  REC: "Recyclables",
+  VERRE: "Verre",
+  CARTON: "Carton",
+  BIO: "Biodéchets"
+};
+
 // ---------------------------------------------------------------
-// ETAPE 2 : CALCULER LA DISTANCE ENTRE DEUX POINTS GPS
-// C'est la formule de Haversine : elle calcule la distance
-// "à vol d'oiseau" entre deux coordonnées (lat/lon), en tenant
-// compte de la courbure de la Terre.
+// ETAPE 2 : CALCULER LA DISTANCE ENTRE DEUX POINTS GPS (Haversine)
 // ---------------------------------------------------------------
 function distanceEnMetres(lat1, lon1, lat2, lon2) {
-  const R = 6371000; // rayon de la Terre en mètres
+  const R = 6371000;
   const toRad = (deg) => deg * Math.PI / 180;
-
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-
   const a = Math.sin(dLat / 2) ** 2 +
             Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
             Math.sin(dLon / 2) ** 2;
-
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c; // distance en mètres
+  return R * c;
 }
 
 // ---------------------------------------------------------------
 // ETAPE 3 : GEOLOCALISER L'UTILISATEUR
-// L'API navigator.geolocation demande la position au téléphone.
 // ---------------------------------------------------------------
 let userPosition = null;
 let currentRadius = 1000;
+let currentCategory = 'toilettes';
+let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE']);
 let map, userMarker;
 let markers = [];
 
 const statusEl = document.getElementById('status');
 const resultsEl = document.getElementById('results');
+const dechetsFiltersEl = document.getElementById('dechets-filters');
 
 function initMap(lat, lon) {
   map = L.map('map').setView([lat, lon], 15);
@@ -174,77 +279,153 @@ function initMap(lat, lon) {
   }).addTo(map).bindPopup("Toi");
 }
 
+function iconPourCategorie(categorie) {
+  const emoji = categorie === 'toilette' ? '🚻' : categorie === 'dechetterie' ? '🏭' : '♻️';
+  return L.divIcon({
+    html: `<div style="font-size:22px; transform: translate(-50%, -100%);">${emoji}</div>`,
+    className: '',
+    iconSize: [0, 0]
+  });
+}
+
+function getResultatsFiltres() {
+  if (currentCategory === 'toilettes') {
+    return toilettes
+      .map(t => ({
+        ...t,
+        categorie: 'toilette',
+        nom: t.type,
+        distance: distanceEnMetres(userPosition.lat, userPosition.lon, t.latitude, t.longitude)
+      }))
+      .filter(t => t.distance <= currentRadius)
+      .sort((a, b) => a.distance - b.distance);
+  }
+
+  // categorie "dechets" : on combine points d'apport (filtres par type
+  // coche) et dechetteries (si la puce DECHETTERIE est active)
+  return dechets
+    .map(d => ({ ...d, distance: distanceEnMetres(userPosition.lat, userPosition.lon, d.latitude, d.longitude) }))
+    .filter(d => d.distance <= currentRadius)
+    .filter(d => {
+      if (d.categorie === 'dechetterie') return activeTypes.has('DECHETTERIE');
+      // point_apport : garder si au moins un de ses types est coche
+      const typesDuPoint = d.dechets.split(';').filter(Boolean);
+      return typesDuPoint.some(code => activeTypes.has(code));
+    })
+    .sort((a, b) => a.distance - b.distance);
+}
+
 function afficherResultats() {
-  // On efface les anciens marqueurs de toilettes
   markers.forEach(m => map.removeLayer(m));
   markers = [];
   resultsEl.innerHTML = '';
 
-  // On calcule la distance pour chaque toilette, puis on filtre
-  // celles qui sont dans le rayon choisi, triées de la plus proche
-  // à la plus loin.
-  const proches = toilettes
-    .map(t => ({
-      ...t,
-      distance: distanceEnMetres(userPosition.lat, userPosition.lon, t.latitude, t.longitude)
-    }))
-    .filter(t => t.distance <= currentRadius)
-    .sort((a, b) => a.distance - b.distance);
+  const resultats = getResultatsFiltres();
 
-  if (proches.length === 0) {
-    resultsEl.innerHTML = '<div id="empty">Aucune toilette trouvée dans ce rayon. Essaie un rayon plus large.</div>';
+  if (resultats.length === 0) {
+    resultsEl.innerHTML = '<div id="empty">Rien trouvé dans ce rayon avec ces filtres. Essaie un rayon plus large.</div>';
     return;
   }
 
-  proches.forEach(t => {
-    // Carte résultat
+  resultats.forEach(r => {
     const card = document.createElement('div');
-    card.className = 'result-card';
+    card.className = 'result-card ' + (r.categorie || '');
+
+    let tagsHtml = '';
+    if (r.categorie === 'point_apport') {
+      const codes = r.dechets.split(';').filter(Boolean);
+      tagsHtml = '<div class="tags">' + codes.map(c => `<span class="tag">${typeLabels[c] || c}</span>`).join('') + '</div>';
+    } else if (r.categorie === 'dechetterie') {
+      tagsHtml = '<div class="tags"><span class="tag">Accepte tous les déchets</span></div>';
+    }
+
+    const nomAffiche = r.categorie === 'toilette' ? r.type : r.nom;
+    const adresse = r.numero ? `${r.numero} ${r.rue}, ${r.code_postal} ${r.ville}` : `${r.rue}, ${r.code_postal} ${r.ville}`;
+
     card.innerHTML = `
-      <div class="type">${t.type}</div>
-      <div class="adresse">${t.numero} ${t.rue}, ${t.code_postal} ${t.ville}</div>
-      <div class="distance">${Math.round(t.distance)} m</div>
+      <div class="type">${nomAffiche}</div>
+      <div class="adresse">${adresse}</div>
+      ${tagsHtml}
+      <div class="distance">${Math.round(r.distance)} m</div>
     `;
     resultsEl.appendChild(card);
 
-    // Marqueur sur la carte
-    const marker = L.marker([t.latitude, t.longitude])
+    const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie) })
       .addTo(map)
-      .bindPopup(`${t.type}<br>${Math.round(t.distance)} m`);
+      .bindPopup(`${nomAffiche}<br>${Math.round(r.distance)} m`);
     markers.push(marker);
   });
 }
 
 function onSuccess(position) {
-  userPosition = {
-    lat: position.coords.latitude,
-    lon: position.coords.longitude
-  };
+  userPosition = { lat: position.coords.latitude, lon: position.coords.longitude };
   statusEl.textContent = "Position trouvée ✓";
   initMap(userPosition.lat, userPosition.lon);
   afficherResultats();
 }
 
 function onError(err) {
-  statusEl.textContent = "Impossible d'accéder à ta position. Vérifie les autorisations de localisation.";
+  let message;
+  if (err.code === 1) {
+    message = "Localisation refusée pour ce site. Va dans les réglages du site (icône à gauche de l'adresse) et autorise la localisation.";
+  } else if (err.code === 2) {
+    message = "Position indisponible. Vérifie que le GPS est activé et que tu n'es pas en intérieur profond.";
+  } else if (err.code === 3) {
+    message = "La localisation prend trop de temps. Nouvelle tentative...";
+    navigator.geolocation.getCurrentPosition(onSuccess, onFinalError, {
+      enableHighAccuracy: true, timeout: 20000, maximumAge: 0
+    });
+    return;
+  } else {
+    message = "Erreur de localisation inconnue.";
+  }
+  statusEl.textContent = message;
 }
 
-// Demande la position au chargement de la page
+function onFinalError(err) {
+  statusEl.textContent = "Impossible d'obtenir ta position après plusieurs tentatives. Vérifie le GPS et les autorisations du site.";
+}
+
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-    enableHighAccuracy: true,
-    timeout: 10000
+    enableHighAccuracy: true, timeout: 8000, maximumAge: 0
   });
 } else {
   statusEl.textContent = "La géolocalisation n'est pas supportée par ce navigateur.";
 }
 
-// Gestion des boutons de rayon
+// Boutons de rayon
 document.querySelectorAll('.radius-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.radius-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentRadius = parseInt(btn.dataset.radius, 10);
+    if (userPosition) afficherResultats();
+  });
+});
+
+// Onglets de categorie
+document.querySelectorAll('.cat-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentCategory = tab.dataset.cat;
+    dechetsFiltersEl.classList.toggle('visible', currentCategory === 'dechets');
+    if (userPosition) afficherResultats();
+  });
+});
+
+// Puces de type de dechet
+document.querySelectorAll('.type-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const type = chip.dataset.type;
+    if (activeTypes.has(type)) {
+      activeTypes.delete(type);
+      chip.classList.remove('active');
+    } else {
+      activeTypes.add(type);
+      chip.classList.add('active');
+    }
     if (userPosition) afficherResultats();
   });
 });
