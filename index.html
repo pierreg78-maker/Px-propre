@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toilettes proches</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f6f4;
+    color: #1f2a1f;
+  }
+  header {
+    background: #2f5233;
+    color: white;
+    padding: 16px 20px;
+  }
+  header h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+  }
+  header p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+  #status {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    background: #eef1ea;
+    border-bottom: 1px solid #dde2d8;
+  }
+  #radius-controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid #dde2d8;
+  }
+  .radius-btn {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border: 2px solid #2f5233;
+    background: white;
+    color: #2f5233;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .radius-btn.active {
+    background: #2f5233;
+    color: white;
+  }
+  #map {
+    height: 380px;
+    width: 100%;
+  }
+  #results {
+    padding: 12px 20px 40px;
+  }
+  .result-card {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-left: 4px solid #2f5233;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .result-card .type {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .result-card .adresse {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 4px 0;
+  }
+  .result-card .distance {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2f5233;
+  }
+  #empty {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Toilettes à proximité</h1>
+  <p>Basé sur ta position actuelle</p>
+</header>
+
+<div id="status">Localisation en cours...</div>
+
+<div id="radius-controls">
+  <button class="radius-btn" data-radius="250">250 m</button>
+  <button class="radius-btn" data-radius="500">500 m</button>
+  <button class="radius-btn" data-radius="750">750 m</button>
+  <button class="radius-btn active" data-radius="1000">1 km</button>
+  <button class="radius-btn" data-radius="999999">Tout voir</button>
+</div>
+
+<div id="map"></div>
+
+<div id="results"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+
+// ---------------------------------------------------------------
+// ETAPE 1 : LES DONNEES
+// C'est ici que tu remplaceras par ton vrai CSV (4 lignes, 4 emplacements).
+// Pour l'instant, données fictives à Périgueux pour tester la logique.
+// ---------------------------------------------------------------
+const toilettes = [
+  { id: 1, numero: "3", rue: "Place Francheville", code_postal: "24000", ville: "Périgueux", latitude: 45.1848, longitude: 0.7213, type: "Toilettes publiques accessibles PMR" },
+  { id: 2, numero: "12", rue: "Rue Taillefer", code_postal: "24000", ville: "Périgueux", latitude: 45.1875, longitude: 0.7195, type: "Toilettes publiques" },
+  { id: 3, numero: "8", rue: "Cours Fénelon", code_postal: "24000", ville: "Périgueux", latitude: 45.1802, longitude: 0.7241, type: "Sanisette automatique" },
+  { id: 4, numero: "1", rue: "Boulevard Georges Saumande", code_postal: "24000", ville: "Périgueux", latitude: 45.1830, longitude: 0.7160, type: "Toilettes publiques" }
+];
+
+// ---------------------------------------------------------------
+// ETAPE 2 : CALCULER LA DISTANCE ENTRE DEUX POINTS GPS
+// C'est la formule de Haversine : elle calcule la distance
+// "à vol d'oiseau" entre deux coordonnées (lat/lon), en tenant
+// compte de la courbure de la Terre.
+// ---------------------------------------------------------------
+function distanceEnMetres(lat1, lon1, lat2, lon2) {
+  const R = 6371000; // rayon de la Terre en mètres
+  const toRad = (deg) => deg * Math.PI / 180;
+
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // distance en mètres
+}
+
+// ---------------------------------------------------------------
+// ETAPE 3 : GEOLOCALISER L'UTILISATEUR
+// L'API navigator.geolocation demande la position au téléphone.
+// ---------------------------------------------------------------
+let userPosition = null;
+let currentRadius = 1000;
+let map, userMarker;
+let markers = [];
+
+const statusEl = document.getElementById('status');
+const resultsEl = document.getElementById('results');
+
+function initMap(lat, lon) {
+  map = L.map('map').setView([lat, lon], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  userMarker = L.circleMarker([lat, lon], {
+    radius: 8, color: '#1d4ed8', fillColor: '#3b82f6', fillOpacity: 1
+  }).addTo(map).bindPopup("Toi");
+}
+
+function afficherResultats() {
+  // On efface les anciens marqueurs de toilettes
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  resultsEl.innerHTML = '';
+
+  // On calcule la distance pour chaque toilette, puis on filtre
+  // celles qui sont dans le rayon choisi, triées de la plus proche
+  // à la plus loin.
+  const proches = toilettes
+    .map(t => ({
+      ...t,
+      distance: distanceEnMetres(userPosition.lat, userPosition.lon, t.latitude, t.longitude)
+    }))
+    .filter(t => t.distance <= currentRadius)
+    .sort((a, b) => a.distance - b.distance);
+
+  if (proches.length === 0) {
+    resultsEl.innerHTML = '<div id="empty">Aucune toilette trouvée dans ce rayon. Essaie un rayon plus large.</div>';
+    return;
+  }
+
+  proches.forEach(t => {
+    // Carte résultat
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="type">${t.type}</div>
+      <div class="adresse">${t.numero} ${t.rue}, ${t.code_postal} ${t.ville}</div>
+      <div class="distance">${Math.round(t.distance)} m</div>
+    `;
+    resultsEl.appendChild(card);
+
+    // Marqueur sur la carte
+    const marker = L.marker([t.latitude, t.longitude])
+      .addTo(map)
+      .bindPopup(`${t.type}<br>${Math.round(t.distance)} m`);
+    markers.push(marker);
+  });
+}
+
+function onSuccess(position) {
+  userPosition = {
+    lat: position.coords.latitude,
+    lon: position.coords.longitude
+  };
+  statusEl.textContent = "Position trouvée ✓";
+  initMap(userPosition.lat, userPosition.lon);
+  afficherResultats();
+}
+
+function onError(err) {
+  statusEl.textContent = "Impossible d'accéder à ta position. Vérifie les autorisations de localisation.";
+}
+
+// Demande la position au chargement de la page
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+    enableHighAccuracy: true,
+    timeout: 10000
+  });
+} else {
+  statusEl.textContent = "La géolocalisation n'est pas supportée par ce navigateur.";
+}
+
+// Gestion des boutons de rayon
+document.querySelectorAll('.radius-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.radius-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRadius = parseInt(btn.dataset.radius, 10);
+    if (userPosition) afficherResultats();
+  });
+});
+</script>
+
+</body>
+</html>
