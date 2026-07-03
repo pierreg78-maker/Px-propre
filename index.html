@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Services à proximité</title>
+<title>Perigueux propre</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   * { box-sizing: border-box; }
@@ -200,6 +200,7 @@
 <div id="category-tabs">
   <button class="cat-tab active" data-cat="toilettes">🚻 Toilettes</button>
   <button class="cat-tab" data-cat="dechets">♻️ Déchets</button>
+  <button class="cat-tab" data-cat="canisites">🐾 Canisites</button>
 </div>
 
 <div id="dechets-filters">
@@ -267,6 +268,15 @@ function ouvrirSignalement(nom, lat, lon) {
   window.open(url.toString(), '_blank');
 }
 
+// Canisites de Perigueux (source : perigueux.fr, coordonnees approximatives
+// des squares/places -- a affiner sur place si besoin d'une precision au metre pres)
+const canisites = [
+  { id: 1, nom: "Canisite - Square Jean-Jaurès", rue: "Square Jean-Jaurès (derrière le Théâtre)", code_postal: "24000", ville: "Périgueux", latitude: 45.1848451, longitude: 0.7153012 },
+  { id: 2, nom: "Canisite - Place Saint-Martin", rue: "Place Saint-Martin", code_postal: "24000", ville: "Périgueux", latitude: 45.187725, longitude: 0.711561 },
+  { id: 3, nom: "Canisite - Place du Thouin", rue: "Place du Thouin (derrière la cathédrale)", code_postal: "24000", ville: "Périgueux", latitude: 45.1834239, longitude: 0.722629 },
+  { id: 4, nom: "Canisite - Aire de camping-cars", rue: "Rue des Prés", code_postal: "24000", ville: "Périgueux", latitude: 45.1877241, longitude: 0.7308651 }
+];
+
 const typeLabels = {
   OM: "Ordures ménagères",
   REC: "Recyclables",
@@ -316,7 +326,7 @@ function initMap(lat, lon) {
 }
 
 function iconPourCategorie(categorie) {
-  const emoji = categorie === 'toilette' ? '🚻' : categorie === 'dechetterie' ? '🏭' : '♻️';
+  const emoji = categorie === 'toilette' ? '🚻' : categorie === 'dechetterie' ? '🏭' : categorie === 'canisite' ? '🐾' : '♻️';
   return L.divIcon({
     html: `<div style="font-size:22px; transform: translate(-50%, -100%);">${emoji}</div>`,
     className: '',
@@ -334,6 +344,13 @@ function getResultatsFiltres() {
         distance: distanceEnMetres(userPosition.lat, userPosition.lon, t.latitude, t.longitude)
       }))
       .filter(t => t.distance <= currentRadius)
+      .sort((a, b) => a.distance - b.distance);
+  }
+
+  if (currentCategory === 'canisites') {
+    return canisites
+      .map(c => ({ ...c, categorie: 'canisite', distance: distanceEnMetres(userPosition.lat, userPosition.lon, c.latitude, c.longitude) }))
+      .filter(c => c.distance <= currentRadius)
       .sort((a, b) => a.distance - b.distance);
   }
 
