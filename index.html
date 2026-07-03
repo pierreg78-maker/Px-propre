@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ma ville propre</title>
+<title>Services à proximité</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   * { box-sizing: border-box; }
@@ -123,6 +123,22 @@
     height: 380px;
     width: 100%;
   }
+  #ajouter-point-btn {
+    display: none;
+    width: calc(100% - 40px);
+    margin: 0 20px 12px;
+    padding: 12px;
+    border: 2px dashed #2f5233;
+    background: #eef1ea;
+    color: #2f5233;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #ajouter-point-btn.visible {
+    display: block;
+  }
   #results {
     padding: 12px 20px 40px;
   }
@@ -228,6 +244,8 @@
   <button class="radius-btn" data-radius="999999">Tout voir</button>
 </div>
 
+<button id="ajouter-point-btn" class="visible">➕ Un point d'apport manque ici ?</button>
+
 <div id="map"></div>
 
 <div id="results"></div>
@@ -304,6 +322,23 @@ function ouvrirSignalement(nom, lat, lon) {
   window.open(url.toString(), '_blank');
 }
 
+// ---------------------------------------------------------------
+// AJOUT D'UN POINT D'APPORT MANQUANT : formulaire distinct du
+// signalement de probleme. A remplacer une fois le formulaire cree
+// (memes etapes que GOOGLE_FORM ci-dessus).
+// ---------------------------------------------------------------
+const GOOGLE_FORM_NOUVEAU_POINT = {
+  baseUrl: "https://docs.google.com/forms/d/e/REMPLACER_PAR_TON_ID/viewform",
+  entryGps: "entry.REMPLACER"   // champ "Coordonnees GPS"
+};
+
+function ouvrirAjoutPoint() {
+  if (!userPosition) return;
+  const url = new URL(GOOGLE_FORM_NOUVEAU_POINT.baseUrl);
+  url.searchParams.set(GOOGLE_FORM_NOUVEAU_POINT.entryGps, `${userPosition.lat.toFixed(5)},${userPosition.lon.toFixed(5)}`);
+  window.open(url.toString(), '_blank');
+}
+
 // Canisites de Perigueux (source : perigueux.fr, coordonnees approximatives
 // des squares/places -- a affiner sur place si besoin d'une precision au metre pres)
 const canisites = [
@@ -351,6 +386,7 @@ let markers = [];
 const statusEl = document.getElementById('status');
 const resultsEl = document.getElementById('results');
 const dechetsFiltersEl = document.getElementById('dechets-filters');
+const ajouterPointBtn = document.getElementById('ajouter-point-btn');
 
 function initMap(lat, lon) {
   map = L.map('map').setView([lat, lon], 15);
@@ -513,9 +549,14 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
     tab.classList.add('active');
     currentCategory = tab.dataset.cat;
     dechetsFiltersEl.classList.toggle('visible', currentCategory === 'dechets');
+    ajouterPointBtn.classList.toggle('visible', currentCategory === 'dechets');
     if (userPosition) afficherResultats();
   });
 });
+
+// Etat initial du bouton d'ajout (l'onglet Dechets est actif par defaut)
+ajouterPointBtn.classList.toggle('visible', currentCategory === 'dechets');
+ajouterPointBtn.addEventListener('click', ouvrirAjoutPoint);
 
 // Puces de type de dechet
 document.querySelectorAll('.type-chip').forEach(chip => {
