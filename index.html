@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perigueux propre</title>
+<title>Ma ville propre</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   * { box-sizing: border-box; }
@@ -86,6 +86,13 @@
   }
   .type-chip.dechetterie-chip.active {
     background: #8a5a2f;
+    color: white;
+  }
+  .type-chip.carton-chip {
+    border-color: #7a2e2e;
+  }
+  .type-chip.carton-chip.active {
+    background: #7a2e2e;
     color: white;
   }
 
@@ -198,23 +205,26 @@
 <div id="status">Localisation en cours...</div>
 
 <div id="category-tabs">
-  <button class="cat-tab active" data-cat="toilettes">🚻 Toilettes</button>
-  <button class="cat-tab" data-cat="dechets">♻️ Déchets</button>
+  <button class="cat-tab active" data-cat="dechets">♻️ Déchets</button>
+  <button class="cat-tab" data-cat="toilettes">🚻 Toilettes</button>
   <button class="cat-tab" data-cat="canisites">🐾 Canisites</button>
 </div>
 
-<div id="dechets-filters">
+<div id="dechets-filters" class="visible">
   <span class="type-chip active" data-type="OM">Ordures ménagères</span>
   <span class="type-chip active" data-type="REC">Recyclables</span>
   <span class="type-chip active" data-type="VERRE">Verre</span>
-  <span class="type-chip active" data-type="CARTON">Carton</span>
+  <span class="type-chip carton-chip active" data-type="CARTON">📦 Grand carton</span>
   <span class="type-chip active" data-type="BIO">Biodéchets</span>
+  <span class="type-chip active" data-type="TEXTILE">👕 Vêtements</span>
+  <span class="type-chip active" data-type="PILES">🔋 Piles</span>
   <span class="type-chip dechetterie-chip active" data-type="DECHETTERIE">🏭 Déchèteries</span>
 </div>
 
 <div id="radius-controls">
+  <button class="radius-btn active" data-radius="250">250 m</button>
   <button class="radius-btn" data-radius="500">500 m</button>
-  <button class="radius-btn active" data-radius="1000">1 km</button>
+  <button class="radius-btn" data-radius="1000">1 km</button>
   <button class="radius-btn" data-radius="999999">Tout voir</button>
 </div>
 
@@ -247,7 +257,33 @@ const dechets = [
   { id: 3, nom: "Borne Foch", numero: "20", rue: "Cours Michel Montaigne", code_postal: "24000", ville: "Périgueux", latitude: 45.1858, longitude: 0.7180, categorie: "point_apport", dechets: "OM;REC;VERRE;CARTON" },
   { id: 4, nom: "Déchèterie de Boulazac", numero: "", rue: "Route de Brantôme", code_postal: "24750", ville: "Boulazac Isle Manoire", latitude: 45.1660, longitude: 0.7620, categorie: "dechetterie", dechets: "" },
   { id: 5, nom: "Déchèterie de Marsac-sur-l'Isle", numero: "", rue: "Zone artisanale", code_postal: "24430", ville: "Marsac-sur-l'Isle", latitude: 45.1930, longitude: 0.6640, categorie: "dechetterie", dechets: "" },
-  { id: 6, nom: "Déchèterie de Coulounieix-Chamiers", numero: "", rue: "Route de Bergerac", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1740, longitude: 0.6980, categorie: "dechetterie", dechets: "" }
+  { id: 6, nom: "Déchèterie de Coulounieix-Chamiers", numero: "", rue: "Route de Bergerac", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1740, longitude: 0.6980, categorie: "dechetterie", dechets: "" },
+
+  // --- Lot 2 : points d'apport emballages/papiers, Périgueux centre ---
+  { id: 7, nom: "Borne Allée du Port", numero: "6", rue: "Allée du Port", code_postal: "24000", ville: "Périgueux", latitude: 45.1836846, longitude: 0.7052561, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 8, nom: "Borne Solférino", numero: "7", rue: "Rue Solférino", code_postal: "24000", ville: "Périgueux", latitude: 45.1874179, longitude: 0.7113853, categorie: "point_apport", dechets: "OM;REC;VERRE;BIO" },
+  { id: 9, nom: "Borne Turenne", numero: "", rue: "Rue Turenne", code_postal: "24000", ville: "Périgueux", latitude: 45.1821298, longitude: 0.7122716, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 10, nom: "Borne Maréchal de Lattre de Tassigny", numero: "16", rue: "Avenue Maréchal de Lattre de Tassigny", code_postal: "24003", ville: "Périgueux", latitude: 45.1856275, longitude: 0.7160482, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 11, nom: "Borne Antoine Gadaud", numero: "1", rue: "Rue Antoine Gadaud", code_postal: "24000", ville: "Périgueux", latitude: 45.184717, longitude: 0.71497, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 12, nom: "Borne Président Wilson", numero: "12", rue: "Rue du Président Wilson", code_postal: "24000", ville: "Périgueux", latitude: 45.1799377, longitude: 0.7241511, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 13, nom: "Borne Louis Blanc", numero: "11", rue: "Rue Louis Blanc", code_postal: "24000", ville: "Périgueux", latitude: 45.1864191, longitude: 0.7112436, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 14, nom: "Borne Denis Papin", numero: "2", rue: "Rue Denis Papin", code_postal: "24000", ville: "Périgueux", latitude: 45.1864518, longitude: 0.709421, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 15, nom: "Borne de l'Entrepôt", numero: "16", rue: "Rue de l'Entrepôt", code_postal: "24000", ville: "Périgueux", latitude: 45.1848995, longitude: 0.7063847, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 16, nom: "Borne Jean Jaurès", numero: "", rue: "Avenue Jean Jaurès", code_postal: "24000", ville: "Périgueux", latitude: 45.1848451, longitude: 0.7153012, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 17, nom: "Borne Henri Murger", numero: "2", rue: "Rue Henri Murger", code_postal: "24000", ville: "Périgueux", latitude: 45.184138, longitude: 0.704126, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 18, nom: "Borne Frères Marty", numero: "21", rue: "Rue des Frères Marty", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1854306, longitude: 0.6943102, categorie: "point_apport", dechets: "OM;REC;BIO" },
+
+  // --- Lot 3 : Vêtements / Piles (points partenaires) ---
+  { id: 19, nom: "Le Relais Gironde", numero: "", rue: "Rue Ludovic Trarieux", code_postal: "24000", ville: "Périgueux", latitude: 45.191859, longitude: 0.713271, categorie: "point_apport", dechets: "TEXTILE" },
+  { id: 20, nom: "Point piles & batteries - Audilab", numero: "14", rue: "Rue Antoine Gadaud", code_postal: "24000", ville: "Périgueux", latitude: 45.1866421, longitude: 0.7165519, categorie: "point_apport", dechets: "PILES" },
+
+  // --- Lot 4 : points d'apport, Sanilhac ---
+  { id: 21, nom: "Borne Impasse du Parc Prompsault 1", numero: "1", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC;BIO" },
+  { id: 22, nom: "Borne Impasse du Parc Prompsault 2", numero: "2", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 23, nom: "Borne Frères Peyronnet", numero: "502", rue: "Avenue des Frères Peyronnet", code_postal: "24660", ville: "Sanilhac", latitude: 45.145249, longitude: 0.7230259, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 24, nom: "Borne des Sauterelles", numero: "", rue: "Allée des Sauterelles", code_postal: "24660", ville: "Sanilhac", latitude: 45.16104, longitude: 0.7263307, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 25, nom: "Borne des Falots", numero: "1", rue: "Impasse des Falots", code_postal: "24660", ville: "Sanilhac", latitude: 45.164755, longitude: 0.7267940, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 26, nom: "Borne Rue de la Mairie", numero: "", rue: "Rue de la Mairie", code_postal: "24660", ville: "Sanilhac", latitude: 45.175944, longitude: 0.7251419, categorie: "point_apport", dechets: "OM;REC;CARTON;BIO" }
 ];
 
 // ---------------------------------------------------------------
@@ -281,8 +317,10 @@ const typeLabels = {
   OM: "Ordures ménagères",
   REC: "Recyclables",
   VERRE: "Verre",
-  CARTON: "Carton",
-  BIO: "Biodéchets"
+  CARTON: "Grand carton",
+  BIO: "Biodéchets",
+  TEXTILE: "Vêtements / Textiles",
+  PILES: "Piles et batteries"
 };
 
 // ---------------------------------------------------------------
@@ -304,9 +342,9 @@ function distanceEnMetres(lat1, lon1, lat2, lon2) {
 // ETAPE 3 : GEOLOCALISER L'UTILISATEUR
 // ---------------------------------------------------------------
 let userPosition = null;
-let currentRadius = 1000;
-let currentCategory = 'toilettes';
-let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE']);
+let currentRadius = 250;
+let currentCategory = 'dechets';
+let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE', 'TEXTILE', 'PILES']);
 let map, userMarker;
 let markers = [];
 
@@ -325,8 +363,13 @@ function initMap(lat, lon) {
   }).addTo(map).bindPopup("Toi");
 }
 
-function iconPourCategorie(categorie) {
-  const emoji = categorie === 'toilette' ? '🚻' : categorie === 'dechetterie' ? '🏭' : categorie === 'canisite' ? '🐾' : '♻️';
+function iconPourCategorie(categorie, dechetsStr) {
+  let emoji = '♻️';
+  if (categorie === 'toilette') emoji = '🚻';
+  else if (categorie === 'dechetterie') emoji = '🏭';
+  else if (categorie === 'canisite') emoji = '🐾';
+  else if (dechetsStr === 'TEXTILE') emoji = '👕';
+  else if (dechetsStr === 'PILES') emoji = '🔋';
   return L.divIcon({
     html: `<div style="font-size:22px; transform: translate(-50%, -100%);">${emoji}</div>`,
     className: '',
@@ -409,7 +452,7 @@ function afficherResultats() {
     });
     resultsEl.appendChild(card);
 
-    const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie) })
+    const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie, r.dechets) })
       .addTo(map)
       .bindPopup(`${nomAffiche}<br>${Math.round(r.distance)} m`);
     markers.push(marker);
