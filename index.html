@@ -160,6 +160,26 @@
     font-weight: 600;
     color: #2f5233;
   }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .report-btn {
+    padding: 6px 10px;
+    border: 1px solid #b5482f;
+    background: white;
+    color: #b5482f;
+    border-radius: 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .report-btn:active {
+    background: #b5482f;
+    color: white;
+  }
   #empty {
     text-align: center;
     color: #777;
@@ -192,9 +212,7 @@
 </div>
 
 <div id="radius-controls">
-  <button class="radius-btn" data-radius="250">250 m</button>
   <button class="radius-btn" data-radius="500">500 m</button>
-  <button class="radius-btn" data-radius="750">750 m</button>
   <button class="radius-btn active" data-radius="1000">1 km</button>
   <button class="radius-btn" data-radius="999999">Tout voir</button>
 </div>
@@ -230,6 +248,24 @@ const dechets = [
   { id: 5, nom: "Déchèterie de Marsac-sur-l'Isle", numero: "", rue: "Zone artisanale", code_postal: "24430", ville: "Marsac-sur-l'Isle", latitude: 45.1930, longitude: 0.6640, categorie: "dechetterie", dechets: "" },
   { id: 6, nom: "Déchèterie de Coulounieix-Chamiers", numero: "", rue: "Route de Bergerac", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1740, longitude: 0.6980, categorie: "dechetterie", dechets: "" }
 ];
+
+// ---------------------------------------------------------------
+// SIGNALEMENT DE PROBLEME : lien vers un Google Form pre-rempli.
+// Remplace ces valeurs par les tiennes une fois le formulaire cree
+// (Google Form -> 3 points -> "Obtenir le lien prerempli").
+// ---------------------------------------------------------------
+const GOOGLE_FORM = {
+  baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfXcceLSn-s32U9gohMG2yjgA0oQuMfIysUDMOXdXuI9wD-yw/viewform",
+  entryLieu: "entry.237831157",   // champ "Lieu concerne"
+  entryGps: "entry.348540032"     // champ "Coordonnees GPS"
+};
+
+function ouvrirSignalement(nom, lat, lon) {
+  const url = new URL(GOOGLE_FORM.baseUrl);
+  url.searchParams.set(GOOGLE_FORM.entryLieu, nom);
+  url.searchParams.set(GOOGLE_FORM.entryGps, `${lat.toFixed(5)},${lon.toFixed(5)}`);
+  window.open(url.toString(), '_blank');
+}
 
 const typeLabels = {
   OM: "Ordures ménagères",
@@ -346,8 +382,14 @@ function afficherResultats() {
       <div class="type">${nomAffiche}</div>
       <div class="adresse">${adresse}</div>
       ${tagsHtml}
-      <div class="distance">${Math.round(r.distance)} m</div>
+      <div class="card-footer">
+        <div class="distance">${Math.round(r.distance)} m</div>
+        <button class="report-btn">⚠️ Signaler un problème</button>
+      </div>
     `;
+    card.querySelector('.report-btn').addEventListener('click', () => {
+      ouvrirSignalement(nomAffiche, r.latitude, r.longitude);
+    });
     resultsEl.appendChild(card);
 
     const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie) })
