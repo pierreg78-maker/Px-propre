@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ma ville propre</title>
+<title>Services à proximité</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
   * { box-sizing: border-box; }
@@ -238,8 +238,8 @@
 </div>
 
 <div id="radius-controls">
-  <button class="radius-btn active" data-radius="250">250 m</button>
-  <button class="radius-btn" data-radius="500">500 m</button>
+  <button class="radius-btn" data-radius="250">250 m</button>
+  <button class="radius-btn active" data-radius="500">500 m</button>
   <button class="radius-btn" data-radius="1000">1 km</button>
   <button class="radius-btn" data-radius="999999">Tout voir</button>
 </div>
@@ -296,12 +296,13 @@ const dechets = [
   { id: 20, nom: "Point piles & batteries - Audilab", numero: "14", rue: "Rue Antoine Gadaud", code_postal: "24000", ville: "Périgueux", latitude: 45.1866421, longitude: 0.7165519, categorie: "point_apport", dechets: "PILES" },
 
   // --- Lot 4 : points d'apport, Sanilhac ---
-  { id: 21, nom: "Borne Impasse du Parc Prompsault 1", numero: "1", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 22, nom: "Borne Impasse du Parc Prompsault 2", numero: "2", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 21, nom: "Borne Impasse du Parc Prompsault 1", numero: "1", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC;VERRE" },
+  { id: 22, nom: "Borne Impasse du Parc Prompsault 2", numero: "20", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171204, longitude: 0.728679, categorie: "point_apport", dechets: "OM;REC" },
   { id: 23, nom: "Borne Frères Peyronnet", numero: "502", rue: "Avenue des Frères Peyronnet", code_postal: "24660", ville: "Sanilhac", latitude: 45.145249, longitude: 0.7230259, categorie: "point_apport", dechets: "OM;REC" },
   { id: 24, nom: "Borne des Sauterelles", numero: "", rue: "Allée des Sauterelles", code_postal: "24660", ville: "Sanilhac", latitude: 45.16104, longitude: 0.7263307, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 25, nom: "Borne des Falots", numero: "26", rue: "Route de Jargues", code_postal: "24660", ville: "Sanilhac", latitude: 45.16475, longitude: 0.72679, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 26, nom: "Borne Rue de la Mairie", numero: "", rue: "Rue de la Mairie", code_postal: "24660", ville: "Sanilhac", latitude: 45.175944, longitude: 0.7251419, categorie: "point_apport", dechets: "OM;REC;CARTON;BIO" }
+  { id: 25, nom: "Borne des Falots", numero: "1", rue: "Impasse des Falots", code_postal: "24660", ville: "Sanilhac", latitude: 45.164755, longitude: 0.7267940, categorie: "point_apport", dechets: "OM;REC" },
+  { id: 26, nom: "Borne Rue de la Mairie", numero: "", rue: "Rue de la Mairie", code_postal: "24660", ville: "Sanilhac", latitude: 45.175944, longitude: 0.7251419, categorie: "point_apport", dechets: "OM;REC;CARTON;BIO" },
+  { id: 27, nom: "Borne Route de Jargues (⚠️ ordures au sol signalées)", numero: "27", rue: "Route de Jargues", code_postal: "24660", ville: "Sanilhac", latitude: 45.1651059, longitude: 0.7266235, categorie: "point_apport", dechets: "OM;REC" }
 ];
 
 // ---------------------------------------------------------------
@@ -328,8 +329,12 @@ function ouvrirSignalement(nom, lat, lon) {
 // (memes etapes que GOOGLE_FORM ci-dessus).
 // ---------------------------------------------------------------
 const GOOGLE_FORM_NOUVEAU_POINT = {
-  baseUrl: "https://docs.google.com/forms/d/e/REMPLACER_PAR_TON_ID/viewform",
-  entryGps: "entry.REMPLACER"   // champ "Coordonnees GPS"
+  baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdgF5DXlfxJdlNgHBDPCZoS8xtzcbNDNX-EenIEdCu3yXQl-A/viewform",
+  entryAdresse: "entry.632062811",   // champ "Adresse ou repere"
+  entryCommune: "entry.2103358057",  // champ "Commune"
+  entryTypes: "entry.1290561210",    // champ "Types de dechets acceptes" (case a cocher, valeurs multiples possibles)
+  entryCommentaire: "entry.2079166645", // champ "Commentaire"
+  entryGps: "entry.1602849538"       // champ "Coordonnees GPS"
 };
 
 function ouvrirAjoutPoint() {
@@ -377,9 +382,9 @@ function distanceEnMetres(lat1, lon1, lat2, lon2) {
 // ETAPE 3 : GEOLOCALISER L'UTILISATEUR
 // ---------------------------------------------------------------
 let userPosition = null;
-let currentRadius = 250;
+let currentRadius = 500;
 let currentCategory = 'dechets';
-let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE', 'TEXTILE', 'PILES']);
+let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE', 'TEXTILES', 'PILES']);
 let map, userMarker;
 let markers = [];
 
@@ -404,7 +409,7 @@ function iconPourCategorie(categorie, dechetsStr) {
   if (categorie === 'toilette') emoji = '🚻';
   else if (categorie === 'dechetterie') emoji = '🏭';
   else if (categorie === 'canisite') emoji = '🐾';
-  else if (dechetsStr === 'TEXTILE') emoji = '👕';
+  else if (dechetsStr === 'TEXTILES') emoji = '👕';
   else if (dechetsStr === 'PILES') emoji = '🔋';
   return L.divIcon({
     html: `<div style="font-size:22px; transform: translate(-50%, -100%);">${emoji}</div>`,
