@@ -34,7 +34,6 @@
     border-bottom: 1px solid #dde2d8;
   }
 
-  /* Onglets de categorie */
   #category-tabs {
     display: flex;
     background: white;
@@ -57,7 +56,6 @@
     border-bottom-color: #2f5233;
   }
 
-  /* Filtres dechets (types + dechetteries) */
   #dechets-filters {
     display: none;
     padding: 10px 20px;
@@ -81,20 +79,10 @@
     background: #6b7f6d;
     color: white;
   }
-  .type-chip.dechetterie-chip {
-    border-color: #8a5a2f;
-  }
-  .type-chip.dechetterie-chip.active {
-    background: #8a5a2f;
-    color: white;
-  }
-  .type-chip.carton-chip {
-    border-color: #7a2e2e;
-  }
-  .type-chip.carton-chip.active {
-    background: #7a2e2e;
-    color: white;
-  }
+  .type-chip.dechetterie-chip { border-color: #8a5a2f; }
+  .type-chip.dechetterie-chip.active { background: #8a5a2f; color: white; }
+  .type-chip.carton-chip { border-color: #7a2e2e; }
+  .type-chip.carton-chip.active { background: #7a2e2e; color: white; }
 
   #radius-controls {
     display: flex;
@@ -126,7 +114,7 @@
   #ajouter-point-btn {
     display: none;
     width: calc(100% - 40px);
-    margin: 0 20px 12px;
+    margin: 12px 20px 0;
     padding: 12px;
     border: 2px dashed #2f5233;
     background: #eef1ea;
@@ -136,12 +124,8 @@
     font-weight: 600;
     cursor: pointer;
   }
-  #ajouter-point-btn.visible {
-    display: block;
-  }
-  #results {
-    padding: 12px 20px 40px;
-  }
+  #ajouter-point-btn.visible { display: block; }
+  #results { padding: 12px 20px 40px; }
   .result-card {
     background: white;
     border-radius: 10px;
@@ -149,28 +133,13 @@
     margin-bottom: 10px;
     border-left: 4px solid #2f5233;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: pointer;
   }
-  .result-card.dechetterie {
-    border-left-color: #8a5a2f;
-  }
-  .result-card.point_apport {
-    border-left-color: #6b7f6d;
-  }
-  .result-card .type {
-    font-weight: 700;
-    font-size: 0.95rem;
-  }
-  .result-card .adresse {
-    font-size: 0.85rem;
-    color: #555;
-    margin: 4px 0;
-  }
-  .result-card .tags {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin: 6px 0;
-  }
+  .result-card.dechetterie { border-left-color: #8a5a2f; }
+  .result-card.point_apport { border-left-color: #6b7f6d; }
+  .result-card .type { font-weight: 700; font-size: 0.95rem; }
+  .result-card .adresse { font-size: 0.85rem; color: #555; margin: 4px 0; }
+  .result-card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
   .result-card .tag {
     font-size: 0.72rem;
     padding: 2px 8px;
@@ -178,44 +147,39 @@
     background: #eef1ea;
     color: #445;
   }
-  .result-card .distance {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #2f5233;
-  }
+  .result-card .distance { font-size: 0.85rem; font-weight: 600; color: #2f5233; }
   .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
-  .report-btn {
+  .report-btn, .itineraire-btn {
     padding: 6px 10px;
-    border: 1px solid #b5482f;
-    background: white;
-    color: #b5482f;
     border-radius: 14px;
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
+    background: white;
   }
-  .report-btn:active {
-    background: #b5482f;
-    color: white;
-  }
-  #empty {
-    text-align: center;
-    color: #777;
-    padding: 20px;
-    font-size: 0.9rem;
+  .report-btn { border: 1px solid #b5482f; color: #b5482f; }
+  .report-btn:active { background: #b5482f; color: white; }
+  .itineraire-btn { border: 1px solid #2f5233; color: #2f5233; text-decoration: none; }
+  #empty { text-align: center; color: #777; padding: 20px; font-size: 0.9rem; }
+  footer.data-note {
+    padding: 8px 20px 28px;
+    font-size: 0.72rem;
+    color: #778;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Services à proximité</h1>
-  <p>Basé sur ta position actuelle</p>
+  <h1>Pour une ville propre</h1>
+  <p>Services à proximité — Grand Périgueux</p>
 </header>
 
 <div id="status">Localisation en cours...</div>
@@ -241,24 +205,20 @@
   <button class="radius-btn" data-radius="250">250 m</button>
   <button class="radius-btn active" data-radius="500">500 m</button>
   <button class="radius-btn" data-radius="1000">1 km</button>
+  <button class="radius-btn" data-radius="3000">3 km</button>
   <button class="radius-btn" data-radius="999999">Tout voir</button>
 </div>
 
-<button id="ajouter-point-btn" class="visible">➕ Un point d'apport manque ici ?</button>
-
 <div id="map"></div>
-
+<button id="ajouter-point-btn" class="visible">➕ Un point d'apport manque ici ?</button>
 <div id="results"></div>
+<footer class="data-note">
+  Points d'apport : guidedutri.fr (carte SMD3 / Citeo) + OpenStreetMap.
+  Déchèteries complémentaires : smd3.fr. Les bornes biodéchets SMD3 s'ouvrent avec un badge.
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-
-// ---------------------------------------------------------------
-// ETAPE 1 : LES DONNEES
-// Deux jeux de donnees separes, un par categorie de service.
-// Remplace par tes vrais CSV quand tu les auras (toilettes deja
-// collectees, dechets en attente de reponse du SMD3 / mairie).
-// ---------------------------------------------------------------
 const toilettes = [
   { id: 1, numero: "3", rue: "Place Francheville", code_postal: "24000", ville: "Périgueux", latitude: 45.1848, longitude: 0.7213, type: "Toilettes publiques accessibles PMR" },
   { id: 2, numero: "12", rue: "Rue Taillefer", code_postal: "24000", ville: "Périgueux", latitude: 45.1875, longitude: 0.7195, type: "Toilettes publiques" },
@@ -266,86 +226,4068 @@ const toilettes = [
   { id: 4, numero: "1", rue: "Boulevard Georges Saumande", code_postal: "24000", ville: "Périgueux", latitude: 45.1830, longitude: 0.7160, type: "Toilettes publiques" }
 ];
 
-// categorie : "point_apport" ou "dechetterie"
-// dechets   : liste de codes separes par ";" (vide pour une dechetterie,
-//             qui accepte tout). Codes : OM, REC, VERRE, CARTON, BIO
 const dechets = [
-  { id: 1, nom: "Borne Fénelon", numero: "8", rue: "Cours Fénelon", code_postal: "24000", ville: "Périgueux", latitude: 45.1805, longitude: 0.7238, categorie: "point_apport", dechets: "OM;REC;VERRE" },
-  { id: 2, nom: "Borne Taillefer", numero: "12", rue: "Rue Taillefer", code_postal: "24000", ville: "Périgueux", latitude: 45.1872, longitude: 0.7198, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 3, nom: "Borne Foch", numero: "20", rue: "Cours Michel Montaigne", code_postal: "24000", ville: "Périgueux", latitude: 45.1858, longitude: 0.7180, categorie: "point_apport", dechets: "OM;REC;VERRE;CARTON" },
-  { id: 4, nom: "Déchèterie de Boulazac", numero: "", rue: "Route de Brantôme", code_postal: "24750", ville: "Boulazac Isle Manoire", latitude: 45.1660, longitude: 0.7620, categorie: "dechetterie", dechets: "" },
-  { id: 5, nom: "Déchèterie de Marsac-sur-l'Isle", numero: "", rue: "Zone artisanale", code_postal: "24430", ville: "Marsac-sur-l'Isle", latitude: 45.1930, longitude: 0.6640, categorie: "dechetterie", dechets: "" },
-  { id: 6, nom: "Déchèterie de Coulounieix-Chamiers", numero: "", rue: "Route de Bergerac", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1740, longitude: 0.6980, categorie: "dechetterie", dechets: "" },
-
-  // --- Lot 2 : points d'apport emballages/papiers, Périgueux centre ---
-  { id: 7, nom: "Borne Allée du Port", numero: "6", rue: "Allée du Port", code_postal: "24000", ville: "Périgueux", latitude: 45.1836846, longitude: 0.7052561, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 8, nom: "Borne Solférino", numero: "7", rue: "Rue Solférino", code_postal: "24000", ville: "Périgueux", latitude: 45.1874179, longitude: 0.7113853, categorie: "point_apport", dechets: "OM;REC;VERRE;BIO" },
-  { id: 9, nom: "Borne Turenne", numero: "", rue: "Rue Turenne", code_postal: "24000", ville: "Périgueux", latitude: 45.1821298, longitude: 0.7122716, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 10, nom: "Borne Maréchal de Lattre de Tassigny", numero: "16", rue: "Avenue Maréchal de Lattre de Tassigny", code_postal: "24003", ville: "Périgueux", latitude: 45.1856275, longitude: 0.7160482, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 11, nom: "Borne Antoine Gadaud", numero: "1", rue: "Rue Antoine Gadaud", code_postal: "24000", ville: "Périgueux", latitude: 45.184717, longitude: 0.71497, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 12, nom: "Borne Président Wilson", numero: "12", rue: "Rue du Président Wilson", code_postal: "24000", ville: "Périgueux", latitude: 45.1799377, longitude: 0.7241511, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 13, nom: "Borne Louis Blanc", numero: "11", rue: "Rue Louis Blanc", code_postal: "24000", ville: "Périgueux", latitude: 45.1864191, longitude: 0.7112436, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 14, nom: "Borne Denis Papin", numero: "2", rue: "Rue Denis Papin", code_postal: "24000", ville: "Périgueux", latitude: 45.1864518, longitude: 0.709421, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 15, nom: "Borne de l'Entrepôt", numero: "16", rue: "Rue de l'Entrepôt", code_postal: "24000", ville: "Périgueux", latitude: 45.1848995, longitude: 0.7063847, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 16, nom: "Borne Jean Jaurès", numero: "", rue: "Avenue Jean Jaurès", code_postal: "24000", ville: "Périgueux", latitude: 45.1848451, longitude: 0.7153012, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 17, nom: "Borne Henri Murger", numero: "2", rue: "Rue Henri Murger", code_postal: "24000", ville: "Périgueux", latitude: 45.184138, longitude: 0.704126, categorie: "point_apport", dechets: "OM;REC;BIO" },
-  { id: 18, nom: "Borne Frères Marty", numero: "21", rue: "Rue des Frères Marty", code_postal: "24660", ville: "Coulounieix-Chamiers", latitude: 45.1854306, longitude: 0.6943102, categorie: "point_apport", dechets: "OM;REC;BIO" },
-
-  // --- Lot 3 : Vêtements / Piles (points partenaires) ---
-  { id: 19, nom: "Le Relais Gironde", numero: "", rue: "Rue Ludovic Trarieux", code_postal: "24000", ville: "Périgueux", latitude: 45.191859, longitude: 0.713271, categorie: "point_apport", dechets: "TEXTILE" },
-  { id: 20, nom: "Point piles & batteries - Audilab", numero: "14", rue: "Rue Antoine Gadaud", code_postal: "24000", ville: "Périgueux", latitude: 45.1866421, longitude: 0.7165519, categorie: "point_apport", dechets: "PILES" },
-
-  // --- Lot 4 : points d'apport, Sanilhac ---
-  { id: 21, nom: "Borne Impasse du Parc Prompsault 1", numero: "1", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171301, longitude: 0.728516, categorie: "point_apport", dechets: "OM;REC;VERRE" },
-  { id: 22, nom: "Borne Impasse du Parc Prompsault 2", numero: "20", rue: "Impasse du Parc Prompsault", code_postal: "24660", ville: "Sanilhac", latitude: 45.171204, longitude: 0.728679, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 23, nom: "Borne Frères Peyronnet", numero: "502", rue: "Avenue des Frères Peyronnet", code_postal: "24660", ville: "Sanilhac", latitude: 45.145249, longitude: 0.7230259, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 24, nom: "Borne des Sauterelles", numero: "", rue: "Allée des Sauterelles", code_postal: "24660", ville: "Sanilhac", latitude: 45.16104, longitude: 0.7263307, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 25, nom: "Borne des Falots", numero: "1", rue: "Impasse des Falots", code_postal: "24660", ville: "Sanilhac", latitude: 45.164755, longitude: 0.7267940, categorie: "point_apport", dechets: "OM;REC" },
-  { id: 26, nom: "Borne Rue de la Mairie", numero: "", rue: "Rue de la Mairie", code_postal: "24660", ville: "Sanilhac", latitude: 45.175944, longitude: 0.7251419, categorie: "point_apport", dechets: "OM;REC;CARTON;BIO" },
-  { id: 27, nom: "Borne Route de Jargues (⚠️ ordures au sol signalées)", numero: "27", rue: "Route de Jargues", code_postal: "24660", ville: "Sanilhac", latitude: 45.1651059, longitude: 0.7266235, categorie: "point_apport", dechets: "OM;REC" }
+  {
+    "id": 1,
+    "nom": "Point de collecte — Impasse Du Lac Blanc",
+    "numero": "",
+    "rue": "Impasse Du Lac Blanc",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1523758,
+    "longitude": 0.7286128,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 2,
+    "nom": "Point de collecte — Impasse Christian Allard",
+    "numero": "",
+    "rue": "Impasse Christian Allard",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1533022,
+    "longitude": 0.7574727,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 3,
+    "nom": "Point de collecte — Route du Frondal - Cimetière",
+    "numero": "",
+    "rue": "Route du Frondal - Cimetière",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1571618,
+    "longitude": 0.7700878,
+    "categorie": "point_apport",
+    "dechets": "OM",
+    "source": "guidedutri"
+  },
+  {
+    "id": 4,
+    "nom": "Point de collecte — Impasse de la Teyla",
+    "numero": "",
+    "rue": "Impasse de la Teyla",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1611156,
+    "longitude": 0.740935,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 5,
+    "nom": "Point de collecte — Impasse Jean de la Fontaine",
+    "numero": "",
+    "rue": "Impasse Jean de la Fontaine",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.163759,
+    "longitude": 0.7398574,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 6,
+    "nom": "Déchèterie de Boulazac",
+    "numero": "",
+    "rue": "Chemin des Rebières",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.166,
+    "longitude": 0.762,
+    "categorie": "dechetterie",
+    "dechets": "",
+    "source": "smd3"
+  },
+  {
+    "id": 7,
+    "nom": "Point de collecte — Avenue Paul Vaillant Couturier",
+    "numero": "",
+    "rue": "Avenue Paul Vaillant Couturier",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1666363,
+    "longitude": 0.7559418,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 8,
+    "nom": "Point de collecte — Avenue Paul Vaillant Couturier",
+    "numero": "",
+    "rue": "Avenue Paul Vaillant Couturier",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1690588,
+    "longitude": 0.7489885,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 9,
+    "nom": "Point de collecte — Rue de Pey Harry",
+    "numero": "",
+    "rue": "Rue de Pey Harry",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1703489,
+    "longitude": 0.7457319,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 10,
+    "nom": "Point de collecte — Chemin de la Clairière",
+    "numero": "",
+    "rue": "Chemin de la Clairière",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1709485,
+    "longitude": 0.7629951,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 11,
+    "nom": "Point de collecte — Rue Joséphine Baker",
+    "numero": "",
+    "rue": "Rue Joséphine Baker",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1711097,
+    "longitude": 0.7740755,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 12,
+    "nom": "Point de collecte — Place Gérard Saint-Martin",
+    "numero": "7",
+    "rue": "Place Gérard Saint-Martin",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1717666,
+    "longitude": 0.7725071,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 13,
+    "nom": "Point de collecte — Rue Salvador Allende",
+    "numero": "",
+    "rue": "Rue Salvador Allende",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1723371,
+    "longitude": 0.7751541,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 14,
+    "nom": "Point de collecte — Avenue Edouard Boisserie",
+    "numero": "",
+    "rue": "Avenue Edouard Boisserie",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1723651,
+    "longitude": 0.754507,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 15,
+    "nom": "Point de collecte — Rue Marguerite Duras",
+    "numero": "",
+    "rue": "Rue Marguerite Duras",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1727237,
+    "longitude": 0.76202,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 16,
+    "nom": "Point de collecte — Impasse des Châtaigniers",
+    "numero": "",
+    "rue": "Impasse des Châtaigniers",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1727651,
+    "longitude": 0.7426149,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 17,
+    "nom": "Point de collecte — Avenue Louis Lescure",
+    "numero": "",
+    "rue": "Avenue Louis Lescure",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1730752,
+    "longitude": 0.774099,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 18,
+    "nom": "Point de collecte — Rue Olympe de Gouges",
+    "numero": "",
+    "rue": "Rue Olympe de Gouges",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1736195,
+    "longitude": 0.7414168,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 19,
+    "nom": "Point de collecte — Chemin de Lamoura",
+    "numero": "",
+    "rue": "Chemin de Lamoura",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1742281,
+    "longitude": 0.7702742,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 20,
+    "nom": "Point de collecte — Rue Guy Môcquet",
+    "numero": "",
+    "rue": "Rue Guy Môcquet",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1751136,
+    "longitude": 0.7622598,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 21,
+    "nom": "Point de collecte — Avenue Jean Jaurès",
+    "numero": "",
+    "rue": "Avenue Jean Jaurès",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1752908,
+    "longitude": 0.7563541,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 22,
+    "nom": "Point de collecte — Route d'Atur",
+    "numero": "",
+    "rue": "Route d'Atur",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1761078,
+    "longitude": 0.7327056,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 23,
+    "nom": "Point de collecte — Rue Pablo Neruda",
+    "numero": "",
+    "rue": "Rue Pablo Neruda",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1768776,
+    "longitude": 0.7399969,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 24,
+    "nom": "Point de collecte — Route de Bauchaud",
+    "numero": "",
+    "rue": "Route de Bauchaud",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1778642,
+    "longitude": 0.7796933,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 25,
+    "nom": "Point de collecte — Rue Max Barel",
+    "numero": "",
+    "rue": "Rue Max Barel",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1780098,
+    "longitude": 0.7541487,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 26,
+    "nom": "Point de collecte — Place Léon Blum",
+    "numero": "",
+    "rue": "Place Léon Blum",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1781405,
+    "longitude": 0.75319,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 27,
+    "nom": "Point de collecte — Avenue Paul Vaillant Couturier",
+    "numero": "",
+    "rue": "Avenue Paul Vaillant Couturier",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1782781,
+    "longitude": 0.7390169,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 28,
+    "nom": "Point de collecte — Rue Jeanne Vigier",
+    "numero": "",
+    "rue": "Rue Jeanne Vigier",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1788813,
+    "longitude": 0.7528483,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 29,
+    "nom": "Point de collecte — Rue Jean-Louis Barrault",
+    "numero": "",
+    "rue": "Rue Jean-Louis Barrault",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1792538,
+    "longitude": 0.746592,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 30,
+    "nom": "Point de collecte — Rue Charles Schwartz",
+    "numero": "",
+    "rue": "Rue Charles Schwartz",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1797296,
+    "longitude": 0.7494606,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 31,
+    "nom": "Point de collecte — Rue Gaston Monmousseau",
+    "numero": "",
+    "rue": "Rue Gaston Monmousseau",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1801899,
+    "longitude": 0.7529399,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 32,
+    "nom": "Point de collecte — Rue Martin Luther King",
+    "numero": "",
+    "rue": "Rue Martin Luther King",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1802401,
+    "longitude": 0.7567634,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 33,
+    "nom": "Point de collecte — Avenue de la Résistance",
+    "numero": "",
+    "rue": "Avenue de la Résistance",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1806884,
+    "longitude": 0.7593001,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 34,
+    "nom": "Point de collecte — Rue Gaston Monmousseau",
+    "numero": "",
+    "rue": "Rue Gaston Monmousseau",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1808406,
+    "longitude": 0.750358,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 35,
+    "nom": "Point de collecte — Rue Gaston Monmousseau",
+    "numero": "19",
+    "rue": "Rue Gaston Monmousseau",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1810214,
+    "longitude": 0.7521363,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 36,
+    "nom": "Point de collecte — Rue de Florence",
+    "numero": "",
+    "rue": "Rue de Florence",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1812483,
+    "longitude": 0.7631342,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 37,
+    "nom": "Point de collecte — Rue des Alsaciens",
+    "numero": "",
+    "rue": "Rue des Alsaciens",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1820607,
+    "longitude": 0.7459998,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 38,
+    "nom": "Point de collecte — Rue d'Arezzo",
+    "numero": "",
+    "rue": "Rue d'Arezzo",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1822596,
+    "longitude": 0.7634093,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 39,
+    "nom": "Point de collecte — Chemin de la Source",
+    "numero": "",
+    "rue": "Chemin de la Source",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1825359,
+    "longitude": 0.756975,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 40,
+    "nom": "Point de collecte — Rue du Casentino",
+    "numero": "",
+    "rue": "Rue du Casentino",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1828047,
+    "longitude": 0.7606502,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 41,
+    "nom": "Point de collecte — Rue du Casentino",
+    "numero": "",
+    "rue": "Rue du Casentino",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1830212,
+    "longitude": 0.7620659,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 42,
+    "nom": "Point de collecte — avenue marcel paul",
+    "numero": "14",
+    "rue": "avenue marcel paul",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1831293,
+    "longitude": 0.7686866,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 43,
+    "nom": "Point de collecte — Rue Jean Lajoinie",
+    "numero": "2",
+    "rue": "Rue Jean Lajoinie",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1835862,
+    "longitude": 0.767219,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 44,
+    "nom": "Point de collecte — Rue Edison",
+    "numero": "",
+    "rue": "Rue Edison",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1838079,
+    "longitude": 0.7429791,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 45,
+    "nom": "Point de collecte — Rue du Canada",
+    "numero": "",
+    "rue": "Rue du Canada",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1840867,
+    "longitude": 0.745567,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 46,
+    "nom": "Point de collecte — Rue Yvon Delbos",
+    "numero": "",
+    "rue": "Rue Yvon Delbos",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1841955,
+    "longitude": 0.7711864,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 47,
+    "nom": "Point de collecte — Rue des Loisirs",
+    "numero": "",
+    "rue": "Rue des Loisirs",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1849675,
+    "longitude": 0.7456255,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 48,
+    "nom": "Point de collecte — Rue des Bains",
+    "numero": "71",
+    "rue": "Rue des Bains",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.18674,
+    "longitude": 0.7413712,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 49,
+    "nom": "Point de collecte — Barnabé",
+    "numero": "",
+    "rue": "Barnabé",
+    "code_postal": "24750",
+    "ville": "Boulazac Isle Manoire",
+    "latitude": 45.1870678,
+    "longitude": 0.7415339,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 50,
+    "nom": "Point de collecte — Route des Mazades",
+    "numero": "1",
+    "rue": "Route des Mazades",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.1997148,
+    "longitude": 0.7289222,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 51,
+    "nom": "Point de collecte — Rue du doyen joseph lajugie",
+    "numero": "",
+    "rue": "Rue du doyen joseph lajugie",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.1997239,
+    "longitude": 0.7187532,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 52,
+    "nom": "Point de collecte — Av du 8 mai 1945",
+    "numero": "",
+    "rue": "Av du 8 mai 1945",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2016591,
+    "longitude": 0.7246471,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 53,
+    "nom": "Point de collecte — Allée du Maine",
+    "numero": "7",
+    "rue": "Allée du Maine",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2020116,
+    "longitude": 0.7173756,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 54,
+    "nom": "Point de collecte — R du 19 mars 1962",
+    "numero": "",
+    "rue": "R du 19 mars 1962",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.202416,
+    "longitude": 0.7282767,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 55,
+    "nom": "Point de collecte — Che Des Terres Calcaires",
+    "numero": "",
+    "rue": "Che Des Terres Calcaires",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2045178,
+    "longitude": 0.7431324,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 56,
+    "nom": "Point de collecte — R du Vieux Puits",
+    "numero": "",
+    "rue": "R du Vieux Puits",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2051051,
+    "longitude": 0.742419,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 57,
+    "nom": "Point de collecte — Rte de Borie Petit",
+    "numero": "",
+    "rue": "Rte de Borie Petit",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2057913,
+    "longitude": 0.7153574,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 58,
+    "nom": "Point de collecte — Chemin de Bonneau",
+    "numero": "",
+    "rue": "Chemin de Bonneau",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2100323,
+    "longitude": 0.7361844,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 59,
+    "nom": "Point de collecte — Rue Louis Pergaud",
+    "numero": "",
+    "rue": "Rue Louis Pergaud",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2127866,
+    "longitude": 0.7263494,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 60,
+    "nom": "Point de collecte — Rue de Fontroubade",
+    "numero": "4",
+    "rue": "Rue de Fontroubade",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2137492,
+    "longitude": 0.7297973,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 61,
+    "nom": "Point de collecte — Allée du Majoulet",
+    "numero": "",
+    "rue": "Allée du Majoulet",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2139896,
+    "longitude": 0.7412777,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 62,
+    "nom": "Point de collecte — R Arthur Rimbaud",
+    "numero": "",
+    "rue": "R Arthur Rimbaud",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.214516,
+    "longitude": 0.7197645,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 63,
+    "nom": "Point de collecte — Rue Louis Aragon",
+    "numero": "",
+    "rue": "Rue Louis Aragon",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2152478,
+    "longitude": 0.7267255,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 64,
+    "nom": "Point de collecte — Rue Louis Aragon",
+    "numero": "",
+    "rue": "Rue Louis Aragon",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2157536,
+    "longitude": 0.7264354,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 65,
+    "nom": "Point de collecte — Rte d'Agonac",
+    "numero": "",
+    "rue": "Rte d'Agonac",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2160535,
+    "longitude": 0.7029696,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 66,
+    "nom": "Point de collecte — Rue du Bicentenaire",
+    "numero": "",
+    "rue": "Rue du Bicentenaire",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2167838,
+    "longitude": 0.7255539,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 67,
+    "nom": "Point de collecte — Rte de la Grange",
+    "numero": "",
+    "rue": "Rte de la Grange",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2179145,
+    "longitude": 0.7446951,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 68,
+    "nom": "Point de collecte — Allée des Charmes",
+    "numero": "",
+    "rue": "Allée des Charmes",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2180862,
+    "longitude": 0.7276676,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 69,
+    "nom": "Point de collecte — Rte de Beausoleil",
+    "numero": "",
+    "rue": "Rte de Beausoleil",
+    "code_postal": "24750",
+    "ville": "Champcevinel",
+    "latitude": 45.2181583,
+    "longitude": 0.7327755,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 70,
+    "nom": "Déchèterie de Chancelade (Les Gabarres)",
+    "numero": "",
+    "rue": "Les Gabarres",
+    "code_postal": "24650",
+    "ville": "Chancelade",
+    "latitude": 45.2075,
+    "longitude": 0.6655,
+    "categorie": "dechetterie",
+    "dechets": "",
+    "source": "smd3"
+  },
+  {
+    "id": 71,
+    "nom": "Point de collecte — Chemin de Saint-Angel",
+    "numero": "",
+    "rue": "Chemin de Saint-Angel",
+    "code_postal": "24460",
+    "ville": "Château-l'Évêque",
+    "latitude": 45.2158531,
+    "longitude": 0.6887643,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 72,
+    "nom": "Point de collecte — Allée des Vergers",
+    "numero": "",
+    "rue": "Allée des Vergers",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1512241,
+    "longitude": 0.6826792,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 73,
+    "nom": "Point de collecte — Impasse des Aubépines",
+    "numero": "",
+    "rue": "Impasse des Aubépines",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1522749,
+    "longitude": 0.6911945,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 74,
+    "nom": "Point de collecte — SANSONNET",
+    "numero": "",
+    "rue": "SANSONNET",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1540097,
+    "longitude": 0.7119386,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 75,
+    "nom": "Point de collecte — Rampinsolle",
+    "numero": "",
+    "rue": "Rampinsolle",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1553586,
+    "longitude": 0.7124735,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 76,
+    "nom": "Point de collecte — Rue Gabrielle",
+    "numero": "",
+    "rue": "Rue Gabrielle",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1557408,
+    "longitude": 0.7021635,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 77,
+    "nom": "Point de collecte — Lieu dit la Rampinsolle",
+    "numero": "5000",
+    "rue": "Lieu dit la Rampinsolle",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1557777,
+    "longitude": 0.709173,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 78,
+    "nom": "Point de collecte — Rue Anne Frank",
+    "numero": "",
+    "rue": "Rue Anne Frank",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1561205,
+    "longitude": 0.6850712,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 79,
+    "nom": "Point de collecte — Avenue des Eglantiers",
+    "numero": "",
+    "rue": "Avenue des Eglantiers",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.156965,
+    "longitude": 0.6897211,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 80,
+    "nom": "Point de collecte — Avenue Winston Churchill",
+    "numero": "",
+    "rue": "Avenue Winston Churchill",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1583222,
+    "longitude": 0.6877004,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 81,
+    "nom": "Point de collecte — Avenue Pierre Mendès France",
+    "numero": "",
+    "rue": "Avenue Pierre Mendès France",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1591278,
+    "longitude": 0.6919352,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 82,
+    "nom": "Point de collecte — Rue Louise Michel",
+    "numero": "",
+    "rue": "Rue Louise Michel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1605359,
+    "longitude": 0.6842278,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 83,
+    "nom": "Point de collecte — Av Albert Pestour",
+    "numero": "",
+    "rue": "Av Albert Pestour",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1622418,
+    "longitude": 0.7016325,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 84,
+    "nom": "Point de collecte — Avenue Winston Churchill",
+    "numero": "",
+    "rue": "Avenue Winston Churchill",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1649112,
+    "longitude": 0.6871024,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 85,
+    "nom": "Point de collecte — Avenue Edouard Michel",
+    "numero": "",
+    "rue": "Avenue Edouard Michel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1694646,
+    "longitude": 0.6883795,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 86,
+    "nom": "Point de collecte — Impasse Jayanti",
+    "numero": "",
+    "rue": "Impasse Jayanti",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1708071,
+    "longitude": 0.6868273,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 87,
+    "nom": "Point de collecte — Rue Jean Ferrat",
+    "numero": "",
+    "rue": "Rue Jean Ferrat",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1710977,
+    "longitude": 0.6874712,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 88,
+    "nom": "Point de collecte — R Pablo Neruda",
+    "numero": "",
+    "rue": "R Pablo Neruda",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1716183,
+    "longitude": 0.6872514,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 89,
+    "nom": "Déchèterie — Av Edouard michel Le pareau",
+    "numero": "",
+    "rue": "Av Edouard michel Le pareau",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1731,
+    "longitude": 0.690224,
+    "categorie": "dechetterie",
+    "dechets": "",
+    "source": "guidedutri"
+  },
+  {
+    "id": 90,
+    "nom": "Point de collecte — Rue Léon Blum",
+    "numero": "",
+    "rue": "Rue Léon Blum",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1742237,
+    "longitude": 0.684882,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 91,
+    "nom": "Point de collecte — Rue Jean Bouin",
+    "numero": "",
+    "rue": "Rue Jean Bouin",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1750427,
+    "longitude": 0.693722,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 92,
+    "nom": "Point de collecte — Avenue Edouard Michel",
+    "numero": "",
+    "rue": "Avenue Edouard Michel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1759547,
+    "longitude": 0.6903862,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 93,
+    "nom": "Point de collecte — Avenue du 11 Novembre 1918",
+    "numero": "17",
+    "rue": "Avenue du 11 Novembre 1918",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1768139,
+    "longitude": 0.6953106,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 94,
+    "nom": "Point de collecte — Rue du Camp de César",
+    "numero": "",
+    "rue": "Rue du Camp de César",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1770823,
+    "longitude": 0.7050847,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 95,
+    "nom": "Point de collecte — Rue Jacques Brel",
+    "numero": "",
+    "rue": "Rue Jacques Brel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1782871,
+    "longitude": 0.6925845,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 96,
+    "nom": "Point de collecte — Rue Jacques Brel",
+    "numero": "",
+    "rue": "Rue Jacques Brel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1791278,
+    "longitude": 0.6920174,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 97,
+    "nom": "Point de collecte — Rue Georges Brassens",
+    "numero": "",
+    "rue": "Rue Georges Brassens",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1791484,
+    "longitude": 0.6910615,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 98,
+    "nom": "Point de collecte — Rue Jacques Brel",
+    "numero": "",
+    "rue": "Rue Jacques Brel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1795189,
+    "longitude": 0.6915129,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 99,
+    "nom": "Point de collecte — Avenue du Maréchal Gallieni",
+    "numero": "",
+    "rue": "Avenue du Maréchal Gallieni",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1821882,
+    "longitude": 0.6944759,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 100,
+    "nom": "Point de collecte — Rue Maximilien de Robespierre",
+    "numero": "",
+    "rue": "Rue Maximilien de Robespierre",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1824224,
+    "longitude": 0.6827497,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 101,
+    "nom": "Point de collecte — Avenue Jean Jaurès",
+    "numero": "",
+    "rue": "Avenue Jean Jaurès",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1830773,
+    "longitude": 0.6996886,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 102,
+    "nom": "Point de collecte — Avenue Edouard Michel",
+    "numero": "",
+    "rue": "Avenue Edouard Michel",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1832967,
+    "longitude": 0.6803774,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 103,
+    "nom": "Point de collecte — Allée René Dumont",
+    "numero": "",
+    "rue": "Allée René Dumont",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.183923,
+    "longitude": 0.683579,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 104,
+    "nom": "Point de collecte — Avenue de l'Amiral Pradier",
+    "numero": "",
+    "rue": "Avenue de l'Amiral Pradier",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1841506,
+    "longitude": 0.6809908,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 105,
+    "nom": "Point de collecte — Rue des Frères Marty",
+    "numero": "21",
+    "rue": "Rue des Frères Marty",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1856155,
+    "longitude": 0.6942524,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 106,
+    "nom": "Point de collecte — Rue du Président René Coty",
+    "numero": "2",
+    "rue": "Rue du Président René Coty",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1864437,
+    "longitude": 0.697704,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 107,
+    "nom": "Point de collecte — Avenue du Général de Gaulle",
+    "numero": "",
+    "rue": "Avenue du Général de Gaulle",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1875735,
+    "longitude": 0.6985863,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 108,
+    "nom": "Point de collecte — Place du Capitaine de Malet",
+    "numero": "18",
+    "rue": "Place du Capitaine de Malet",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1887999,
+    "longitude": 0.6947228,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 109,
+    "nom": "Point de collecte — Rue Tananarive",
+    "numero": "",
+    "rue": "Rue Tananarive",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1900317,
+    "longitude": 0.6959929,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 110,
+    "nom": "Point de collecte — Impasse Tananarive",
+    "numero": "",
+    "rue": "Impasse Tananarive",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1902706,
+    "longitude": 0.6968269,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 111,
+    "nom": "Point de collecte — Av du Général de Gaulle",
+    "numero": "",
+    "rue": "Av du Général de Gaulle",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.191224,
+    "longitude": 0.6915562,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 112,
+    "nom": "Point de collecte — Rue Pierre Brossolette",
+    "numero": "1",
+    "rue": "Rue Pierre Brossolette",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1913926,
+    "longitude": 0.6944652,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 113,
+    "nom": "Point de collecte — Rue Joliot Curie",
+    "numero": "12",
+    "rue": "Rue Joliot Curie",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1915504,
+    "longitude": 0.6853609,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 114,
+    "nom": "Point de collecte — Rue Gisèle Feyfant",
+    "numero": "8",
+    "rue": "Rue Gisèle Feyfant",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1920078,
+    "longitude": 0.6949935,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 115,
+    "nom": "Point de collecte — Rue Eugénie Cotton",
+    "numero": "38",
+    "rue": "Rue Eugénie Cotton",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1922199,
+    "longitude": 0.6921136,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 116,
+    "nom": "Point de collecte — Rue Yves Farges",
+    "numero": "27",
+    "rue": "Rue Yves Farges",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1924628,
+    "longitude": 0.6890436,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 117,
+    "nom": "Point de collecte — Rue Albert Camus",
+    "numero": "18",
+    "rue": "Rue Albert Camus",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1932115,
+    "longitude": 0.6918363,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 118,
+    "nom": "Point de collecte — Boulevard Jean Moulin",
+    "numero": "12",
+    "rue": "Boulevard Jean Moulin",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1938299,
+    "longitude": 0.6939861,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 119,
+    "nom": "Point de collecte — Rue Jean Macé",
+    "numero": "5",
+    "rue": "Rue Jean Macé",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.1941306,
+    "longitude": 0.6863131,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 120,
+    "nom": "Point de collecte — Avenue du Maréchal de Lattre de Tassigny",
+    "numero": "53B",
+    "rue": "Avenue du Maréchal de Lattre de Tassigny",
+    "code_postal": "24660",
+    "ville": "Coulounieix-Chamiers",
+    "latitude": 45.198005,
+    "longitude": 0.6887405,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 121,
+    "nom": "Composteur / biodéchets",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1722539,
+    "longitude": 0.7722437,
+    "categorie": "point_apport",
+    "dechets": "BIO",
+    "source": "osm"
+  },
+  {
+    "id": 122,
+    "nom": "Point de collecte — Rue de Campniac",
+    "numero": "65",
+    "rue": "Rue de Campniac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.175533,
+    "longitude": 0.7148046,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 123,
+    "nom": "Point de collecte — Rue de Vesone",
+    "numero": "16",
+    "rue": "Rue de Vesone",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1762079,
+    "longitude": 0.7131435,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 124,
+    "nom": "Point de collecte — IMPASSE DE LA MALADRERIE",
+    "numero": "",
+    "rue": "IMPASSE DE LA MALADRERIE",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1764621,
+    "longitude": 0.7234272,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 125,
+    "nom": "Point de collecte — Chemin de Halage",
+    "numero": "1",
+    "rue": "Chemin de Halage",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1769536,
+    "longitude": 0.7206455,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 126,
+    "nom": "Point de collecte — Boulevard Lakanal",
+    "numero": "2",
+    "rue": "Boulevard Lakanal",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1775192,
+    "longitude": 0.7207618,
+    "categorie": "point_apport",
+    "dechets": "REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 127,
+    "nom": "Borne textile",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1776449,
+    "longitude": 0.7328475,
+    "categorie": "point_apport",
+    "dechets": "TEXTILE",
+    "source": "osm"
+  },
+  {
+    "id": 128,
+    "nom": "Point de collecte — RUE FONT LAURIERE",
+    "numero": "25",
+    "rue": "RUE FONT LAURIERE",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1777254,
+    "longitude": 0.7112732,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 129,
+    "nom": "Point de collecte — Rue Fontaine des Malades",
+    "numero": "9",
+    "rue": "Rue Fontaine des Malades",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1777273,
+    "longitude": 0.7249939,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 130,
+    "nom": "Point de collecte — Route de Lyon",
+    "numero": "47bis",
+    "rue": "Route de Lyon",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1781633,
+    "longitude": 0.733894,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 131,
+    "nom": "Point de collecte — RUE MAURICE FEAUX",
+    "numero": "23",
+    "rue": "RUE MAURICE FEAUX",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1783306,
+    "longitude": 0.7116689,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 132,
+    "nom": "Point de collecte — Rue Lacalprenede",
+    "numero": "12",
+    "rue": "Rue Lacalprenede",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1783321,
+    "longitude": 0.7158449,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 133,
+    "nom": "Point de collecte — Rue Haute Saint-Georges",
+    "numero": "20",
+    "rue": "Rue Haute Saint-Georges",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1785466,
+    "longitude": 0.7289273,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 134,
+    "nom": "Point de collecte — Rue Lacalprenede",
+    "numero": "12",
+    "rue": "Rue Lacalprenede",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1787071,
+    "longitude": 0.71601,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 135,
+    "nom": "Point de collecte — Place du 8 Mai 1945",
+    "numero": "9",
+    "rue": "Place du 8 Mai 1945",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1788035,
+    "longitude": 0.7219194,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 136,
+    "nom": "Point de collecte — Rue du Professeur Pozzi",
+    "numero": "30",
+    "rue": "Rue du Professeur Pozzi",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1788594,
+    "longitude": 0.7304081,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 137,
+    "nom": "Point de collecte — Boulevard Bertran de Born",
+    "numero": "2",
+    "rue": "Boulevard Bertran de Born",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1794238,
+    "longitude": 0.7154561,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 138,
+    "nom": "Point de collecte — Point de collecte",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1795452,
+    "longitude": 0.7442189,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "osm"
+  },
+  {
+    "id": 139,
+    "nom": "Point de collecte — Rue du Colonel Raynal",
+    "numero": "23",
+    "rue": "Rue du Colonel Raynal",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1796288,
+    "longitude": 0.7079702,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 140,
+    "nom": "Point de collecte — Rue Arsène d'Arsonval",
+    "numero": "",
+    "rue": "Rue Arsène d'Arsonval",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1797432,
+    "longitude": 0.7448278,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 141,
+    "nom": "Point de collecte — Rue Pierre Magne",
+    "numero": "130",
+    "rue": "Rue Pierre Magne",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1797747,
+    "longitude": 0.7360295,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 142,
+    "nom": "Point de collecte — Rue Lacombe",
+    "numero": "4B",
+    "rue": "Rue Lacombe",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1798376,
+    "longitude": 0.7253908,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 143,
+    "nom": "Point de collecte — Rue Gay Lussac",
+    "numero": "18",
+    "rue": "Rue Gay Lussac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1798607,
+    "longitude": 0.7414867,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 144,
+    "nom": "Point de collecte — Cours Saint-Georges",
+    "numero": "4",
+    "rue": "Cours Saint-Georges",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1798736,
+    "longitude": 0.7243192,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 145,
+    "nom": "Point de collecte — Rue 26ème Régiment d'Infanterie",
+    "numero": "16",
+    "rue": "Rue 26ème Régiment d'Infanterie",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1799301,
+    "longitude": 0.7117135,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 146,
+    "nom": "Point de collecte — Boulevard Lakanal",
+    "numero": "20B",
+    "rue": "Boulevard Lakanal",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1801643,
+    "longitude": 0.7209296,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 147,
+    "nom": "Borne textile — Le Relais",
+    "numero": "",
+    "rue": "le relais",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1802521,
+    "longitude": 0.7244003,
+    "categorie": "point_apport",
+    "dechets": "TEXTILE",
+    "source": "osm"
+  },
+  {
+    "id": 148,
+    "nom": "Composteur collectif",
+    "numero": "",
+    "rue": "Composteur",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1803524,
+    "longitude": 0.7204569,
+    "categorie": "point_apport",
+    "dechets": "BIO",
+    "source": "osm"
+  },
+  {
+    "id": 149,
+    "nom": "Point de collecte — Rue Gay Lussac",
+    "numero": "22",
+    "rue": "Rue Gay Lussac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.180445,
+    "longitude": 0.7414611,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 150,
+    "nom": "Point de collecte — Promenade du Canal",
+    "numero": "2",
+    "rue": "Promenade du Canal",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1805968,
+    "longitude": 0.7065626,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 151,
+    "nom": "Point de collecte — Rue Talleyrand-Périgord",
+    "numero": "20",
+    "rue": "Rue Talleyrand-Périgord",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1806376,
+    "longitude": 0.7296201,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 152,
+    "nom": "Point de collecte — Rue Lavoisier",
+    "numero": "",
+    "rue": "Rue Lavoisier",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1806519,
+    "longitude": 0.7409732,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 153,
+    "nom": "Point de collecte — Rue Eugène le Roy",
+    "numero": "2",
+    "rue": "Rue Eugène le Roy",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1807041,
+    "longitude": 0.720043,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 154,
+    "nom": "Point de collecte — Rue des Thermes",
+    "numero": "",
+    "rue": "Rue des Thermes",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1808751,
+    "longitude": 0.7179314,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 155,
+    "nom": "Point de collecte — Place Hoche",
+    "numero": "2",
+    "rue": "Place Hoche",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1815364,
+    "longitude": 0.7214955,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 156,
+    "nom": "Point de collecte — Rue Lacombe",
+    "numero": "43",
+    "rue": "Rue Lacombe",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1817337,
+    "longitude": 0.7258086,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 157,
+    "nom": "Point de collecte — Rue du 34 Ème Régiment d'Artillerie",
+    "numero": "25",
+    "rue": "Rue du 34 Ème Régiment d'Artillerie",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1818563,
+    "longitude": 0.7329378,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 158,
+    "nom": "Point de collecte — Rue Pierre Magne",
+    "numero": "26",
+    "rue": "Rue Pierre Magne",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1821044,
+    "longitude": 0.7277396,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 159,
+    "nom": "Point de collecte — Point de collecte",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1821792,
+    "longitude": 0.7198212,
+    "categorie": "point_apport",
+    "dechets": "REC",
+    "source": "osm"
+  },
+  {
+    "id": 160,
+    "nom": "Point de collecte — Boulevard du Petit Change",
+    "numero": "138",
+    "rue": "Boulevard du Petit Change",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1823267,
+    "longitude": 0.7442083,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 161,
+    "nom": "Point de collecte — Rue du Lys",
+    "numero": "15",
+    "rue": "Rue du Lys",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1823988,
+    "longitude": 0.7229578,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 162,
+    "nom": "Point de collecte — Rue Maréchal Galliéni",
+    "numero": "",
+    "rue": "Rue Maréchal Galliéni",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.182488,
+    "longitude": 0.7315479,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 163,
+    "nom": "Point de collecte — Boulevard du Petit Change",
+    "numero": "171",
+    "rue": "Boulevard du Petit Change",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1826952,
+    "longitude": 0.7414749,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 164,
+    "nom": "Point de collecte — R TURENNE",
+    "numero": "",
+    "rue": "R TURENNE",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1827175,
+    "longitude": 0.7119228,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 165,
+    "nom": "Point de collecte — Rue des Teinturiers",
+    "numero": "23",
+    "rue": "Rue des Teinturiers",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1829332,
+    "longitude": 0.7291161,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 166,
+    "nom": "Point de collecte — Rue Pierre Magne",
+    "numero": "4B",
+    "rue": "Rue Pierre Magne",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1830389,
+    "longitude": 0.72588,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 167,
+    "nom": "Point de collecte — Rue Tranquille",
+    "numero": "6",
+    "rue": "Rue Tranquille",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1831166,
+    "longitude": 0.7220908,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 168,
+    "nom": "Point de collecte — Place Faidherbe",
+    "numero": "2",
+    "rue": "Place Faidherbe",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1834462,
+    "longitude": 0.7255701,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 169,
+    "nom": "Point de collecte — PL BUGEAUD",
+    "numero": "",
+    "rue": "PL BUGEAUD",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1835931,
+    "longitude": 0.7186147,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 170,
+    "nom": "Point de collecte — Rue des Deux Ponts",
+    "numero": "28bis",
+    "rue": "Rue des Deux Ponts",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1836197,
+    "longitude": 0.7086643,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 171,
+    "nom": "Point de collecte — Allée du Port",
+    "numero": "6",
+    "rue": "Allée du Port",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1838031,
+    "longitude": 0.705322,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 172,
+    "nom": "Point de collecte — Rue de la Pépinière",
+    "numero": "5",
+    "rue": "Rue de la Pépinière",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.183971,
+    "longitude": 0.737156,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 173,
+    "nom": "Point de collecte — Place Daumesnil",
+    "numero": "1",
+    "rue": "Place Daumesnil",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1840611,
+    "longitude": 0.723206,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 174,
+    "nom": "Point de collecte — Rue Henri Murger",
+    "numero": "2",
+    "rue": "Rue Henri Murger",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1841502,
+    "longitude": 0.7038146,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 175,
+    "nom": "Point de collecte — Rue du Président Wilson",
+    "numero": "12",
+    "rue": "Rue du Président Wilson",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1843083,
+    "longitude": 0.7169432,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 176,
+    "nom": "Point de collecte — Point de collecte",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1843391,
+    "longitude": 0.7212453,
+    "categorie": "point_apport",
+    "dechets": "OM",
+    "source": "osm"
+  },
+  {
+    "id": 177,
+    "nom": "Point de collecte — Rue du Port de Graule",
+    "numero": "23",
+    "rue": "Rue du Port de Graule",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1846196,
+    "longitude": 0.7251301,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 178,
+    "nom": "Point de collecte — Rue Antoine Gadaud",
+    "numero": "1",
+    "rue": "Rue Antoine Gadaud",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1846288,
+    "longitude": 0.71517,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 179,
+    "nom": "Point de collecte — Rue de l'Entrepôt",
+    "numero": "2",
+    "rue": "Rue de l'Entrepôt",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.184733,
+    "longitude": 0.7053522,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 180,
+    "nom": "Point de collecte — Place Bugeaud",
+    "numero": "33",
+    "rue": "Place Bugeaud",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1848192,
+    "longitude": 0.7187246,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 181,
+    "nom": "Point de collecte — Rue Gabriel Lacueille",
+    "numero": "17",
+    "rue": "Rue Gabriel Lacueille",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.184919,
+    "longitude": 0.7307134,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 182,
+    "nom": "Point de collecte — Rue de l'Entrepôt",
+    "numero": "16",
+    "rue": "Rue de l'Entrepôt",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1850211,
+    "longitude": 0.7063075,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 183,
+    "nom": "Point de collecte — Avenue Maréchal de Lattre de Tassigny",
+    "numero": "1",
+    "rue": "Avenue Maréchal de Lattre de Tassigny",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1850461,
+    "longitude": 0.7173983,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 184,
+    "nom": "Point de collecte — Rue du Gué de Barnabé",
+    "numero": "32",
+    "rue": "Rue du Gué de Barnabé",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1851107,
+    "longitude": 0.7385104,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 185,
+    "nom": "Point de collecte — Rue Aubarède",
+    "numero": "50",
+    "rue": "Rue Aubarède",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1852752,
+    "longitude": 0.7283524,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 186,
+    "nom": "Point de collecte — Boulevard Michel Montaigne",
+    "numero": "16",
+    "rue": "Boulevard Michel Montaigne",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1853785,
+    "longitude": 0.7200225,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 187,
+    "nom": "Point de collecte — Place du Marché au Bois",
+    "numero": "7",
+    "rue": "Place du Marché au Bois",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1853787,
+    "longitude": 0.7227407,
+    "categorie": "point_apport",
+    "dechets": "REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 188,
+    "nom": "Point de collecte — Rue Charnay Frachet",
+    "numero": "61",
+    "rue": "Rue Charnay Frachet",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1854208,
+    "longitude": 0.7330999,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 189,
+    "nom": "Point de collecte — Avenue Maréchal de Lattre de Tassigny",
+    "numero": "16",
+    "rue": "Avenue Maréchal de Lattre de Tassigny",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1855543,
+    "longitude": 0.715832,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 190,
+    "nom": "Point de collecte — Rue Saint-Front",
+    "numero": "18",
+    "rue": "Rue Saint-Front",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1856458,
+    "longitude": 0.7229051,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 191,
+    "nom": "Point de collecte — Rue Général Morand",
+    "numero": "",
+    "rue": "Rue Général Morand",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.185655,
+    "longitude": 0.7300422,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 192,
+    "nom": "Point de collecte — Rue Louis Blanc",
+    "numero": "11",
+    "rue": "Rue Louis Blanc",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1858057,
+    "longitude": 0.711838,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 193,
+    "nom": "Point de collecte — Rue du Plantier",
+    "numero": "26",
+    "rue": "Rue du Plantier",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1859622,
+    "longitude": 0.7244357,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 194,
+    "nom": "Point de collecte — Impasse Gabriel Lacueille",
+    "numero": "18",
+    "rue": "Impasse Gabriel Lacueille",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1860174,
+    "longitude": 0.7307359,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 195,
+    "nom": "Point de collecte — Rue des Jardiniers",
+    "numero": "47",
+    "rue": "Rue des Jardiniers",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1861195,
+    "longitude": 0.7334063,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 196,
+    "nom": "Point de collecte — Place Général Leclerc",
+    "numero": "247",
+    "rue": "Place Général Leclerc",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1862921,
+    "longitude": 0.7202538,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 197,
+    "nom": "Point de collecte — Rue Charnay Frachet",
+    "numero": "41",
+    "rue": "Rue Charnay Frachet",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1863667,
+    "longitude": 0.7322305,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 198,
+    "nom": "Point de collecte — Rue Denis Papin",
+    "numero": "2",
+    "rue": "Rue Denis Papin",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1864497,
+    "longitude": 0.7093064,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 199,
+    "nom": "Point piles & batteries — Audilab",
+    "numero": "14",
+    "rue": "Rue Antoine Gadaud",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1866421,
+    "longitude": 0.7165519,
+    "categorie": "point_apport",
+    "dechets": "PILES",
+    "source": "partenaire"
+  },
+  {
+    "id": 200,
+    "nom": "Point de collecte — Rue Louise Weiss",
+    "numero": "50",
+    "rue": "Rue Louise Weiss",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1870294,
+    "longitude": 0.7058056,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 201,
+    "nom": "Point de collecte — Rue des Prés",
+    "numero": "36",
+    "rue": "Rue des Prés",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.187438,
+    "longitude": 0.7307653,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 202,
+    "nom": "Point de collecte — Rue Solférino",
+    "numero": "7",
+    "rue": "Rue Solférino",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1874899,
+    "longitude": 0.7114836,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 203,
+    "nom": "Point de collecte — Rue du Vélodrome",
+    "numero": "27",
+    "rue": "Rue du Vélodrome",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.187885,
+    "longitude": 0.7028857,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 204,
+    "nom": "Déchèterie — Fd Pinquet",
+    "numero": "",
+    "rue": "Fd Pinquet",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.188,
+    "longitude": 0.7044,
+    "categorie": "dechetterie",
+    "dechets": "",
+    "source": "guidedutri"
+  },
+  {
+    "id": 205,
+    "nom": "Point de collecte — Rue des Prés",
+    "numero": "",
+    "rue": "Rue des Prés",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1882208,
+    "longitude": 0.7337187,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 206,
+    "nom": "Point de collecte — Rue Guynemer",
+    "numero": "37",
+    "rue": "Rue Guynemer",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.188558,
+    "longitude": 0.716035,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 207,
+    "nom": "Point de collecte — Rue Alfred de Musset",
+    "numero": "31",
+    "rue": "Rue Alfred de Musset",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1889274,
+    "longitude": 0.726909,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 208,
+    "nom": "Point de collecte — RUE MARTHA DESRUMAUX",
+    "numero": "",
+    "rue": "RUE MARTHA DESRUMAUX",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1899121,
+    "longitude": 0.7046795,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 209,
+    "nom": "Point de collecte — Rue Alphee Maziéras",
+    "numero": "67",
+    "rue": "Rue Alphee Maziéras",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1900889,
+    "longitude": 0.703865,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 210,
+    "nom": "Point de collecte — Rue Clos Chassaing",
+    "numero": "63",
+    "rue": "Rue Clos Chassaing",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1901907,
+    "longitude": 0.7157185,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 211,
+    "nom": "Point de collecte — Rue Combe des Dames",
+    "numero": "39",
+    "rue": "Rue Combe des Dames",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1902826,
+    "longitude": 0.7205329,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 212,
+    "nom": "Point de collecte — R DE BEAULIEU",
+    "numero": "",
+    "rue": "R DE BEAULIEU",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1903269,
+    "longitude": 0.7177458,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 213,
+    "nom": "Point de collecte — R LOUIS BLANC",
+    "numero": "",
+    "rue": "R LOUIS BLANC",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1904918,
+    "longitude": 0.7080432,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 214,
+    "nom": "Point de collecte — Boulevard Ampère",
+    "numero": "70",
+    "rue": "Boulevard Ampère",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1905183,
+    "longitude": 0.717244,
+    "categorie": "point_apport",
+    "dechets": "REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 215,
+    "nom": "Point de collecte — Rue Ludovic Trarieux",
+    "numero": "12",
+    "rue": "Rue Ludovic Trarieux",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1907734,
+    "longitude": 0.7129245,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 216,
+    "nom": "Point de collecte — Boulevard Ampère",
+    "numero": "",
+    "rue": "Boulevard Ampère",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1908564,
+    "longitude": 0.7170076,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 217,
+    "nom": "Point de collecte — Rue Clos Chassaing",
+    "numero": "42",
+    "rue": "Rue Clos Chassaing",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1909355,
+    "longitude": 0.7152142,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 218,
+    "nom": "Point de collecte — Rue Paul Louis Courier",
+    "numero": "60",
+    "rue": "Rue Paul Louis Courier",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1910955,
+    "longitude": 0.727628,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 219,
+    "nom": "Point de collecte — Rue Clos Chassaing",
+    "numero": "60",
+    "rue": "Rue Clos Chassaing",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1911533,
+    "longitude": 0.713979,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 220,
+    "nom": "Point de collecte — Rue Jean Pages",
+    "numero": "12",
+    "rue": "Rue Jean Pages",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1912719,
+    "longitude": 0.7172103,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 221,
+    "nom": "Borne textile",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1912953,
+    "longitude": 0.7254869,
+    "categorie": "point_apport",
+    "dechets": "TEXTILE",
+    "source": "osm"
+  },
+  {
+    "id": 222,
+    "nom": "Point de collecte — Rue Blaise Pascal",
+    "numero": "48",
+    "rue": "Rue Blaise Pascal",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1918234,
+    "longitude": 0.7184293,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 223,
+    "nom": "Borne textile — Le Relais",
+    "numero": "",
+    "rue": "Rue Ludovic Trarieux",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.191859,
+    "longitude": 0.713271,
+    "categorie": "point_apport",
+    "dechets": "TEXTILE",
+    "source": "partenaire"
+  },
+  {
+    "id": 224,
+    "nom": "Point de collecte — Boulevard du Puyrousseau",
+    "numero": "10",
+    "rue": "Boulevard du Puyrousseau",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1918807,
+    "longitude": 0.7085625,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 225,
+    "nom": "Point de collecte — Rue Paul Louis Courier",
+    "numero": "63",
+    "rue": "Rue Paul Louis Courier",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1932042,
+    "longitude": 0.7276955,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 226,
+    "nom": "Point de collecte — Rue Forquenot",
+    "numero": "18",
+    "rue": "Rue Forquenot",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1932976,
+    "longitude": 0.7075788,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 227,
+    "nom": "Point de collecte — BD AMPERE",
+    "numero": "",
+    "rue": "BD AMPERE",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1933849,
+    "longitude": 0.7133159,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 228,
+    "nom": "Point de collecte — Rue Albert Pestour",
+    "numero": "5",
+    "rue": "Rue Albert Pestour",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1936142,
+    "longitude": 0.7183901,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 229,
+    "nom": "Point de collecte — Rue Albert Pestour",
+    "numero": "7",
+    "rue": "Rue Albert Pestour",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1939379,
+    "longitude": 0.7188904,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 230,
+    "nom": "Point de collecte — CENTRE HOSPITALIER",
+    "numero": "",
+    "rue": "CENTRE HOSPITALIER",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1940255,
+    "longitude": 0.7316429,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 231,
+    "nom": "Point de collecte — Rue Albert Pestour",
+    "numero": "4",
+    "rue": "Rue Albert Pestour",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1943216,
+    "longitude": 0.7199295,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 232,
+    "nom": "Point de collecte — Boulevard du Puyrousseau",
+    "numero": "56",
+    "rue": "Boulevard du Puyrousseau",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1948259,
+    "longitude": 0.7084997,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 233,
+    "nom": "Point de collecte — Rue Victoria",
+    "numero": "11",
+    "rue": "Rue Victoria",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.194891,
+    "longitude": 0.72692,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 234,
+    "nom": "Point de collecte — Rue Combe des Dames",
+    "numero": "156",
+    "rue": "Rue Combe des Dames",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1950264,
+    "longitude": 0.7233303,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 235,
+    "nom": "Point de collecte — Rue Jules Ferry",
+    "numero": "12",
+    "rue": "Rue Jules Ferry",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1952799,
+    "longitude": 0.704323,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 236,
+    "nom": "Composteur / biodéchets",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1957578,
+    "longitude": 0.7188289,
+    "categorie": "point_apport",
+    "dechets": "BIO",
+    "source": "osm"
+  },
+  {
+    "id": 237,
+    "nom": "Point de collecte — Rue de la Jardinerie",
+    "numero": "3",
+    "rue": "Rue de la Jardinerie",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1958006,
+    "longitude": 0.7071724,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 238,
+    "nom": "Point de collecte — Rue du Cluzeau",
+    "numero": "39",
+    "rue": "Rue du Cluzeau",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1958988,
+    "longitude": 0.7059127,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 239,
+    "nom": "Point de collecte — Rue Jean Secret",
+    "numero": "89",
+    "rue": "Rue Jean Secret",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1960015,
+    "longitude": 0.7145263,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 240,
+    "nom": "Point de collecte — Rue Suzanne Lacore",
+    "numero": "5",
+    "rue": "Rue Suzanne Lacore",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1965832,
+    "longitude": 0.6811599,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 241,
+    "nom": "Point de collecte — Chemin des Feutres du Toulon",
+    "numero": "5",
+    "rue": "Chemin des Feutres du Toulon",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1967334,
+    "longitude": 0.6988422,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 242,
+    "nom": "Point de collecte — Point de collecte",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1968801,
+    "longitude": 0.7185505,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "osm"
+  },
+  {
+    "id": 243,
+    "nom": "Point de collecte — Chemin du Puyrousseau",
+    "numero": "75",
+    "rue": "Chemin du Puyrousseau",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1971297,
+    "longitude": 0.7069964,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 244,
+    "nom": "Point de collecte — Rue Pierre Semard",
+    "numero": "129",
+    "rue": "Rue Pierre Semard",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1972293,
+    "longitude": 0.7001521,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 245,
+    "nom": "Point de collecte — Chemin des Feutres du Toulon",
+    "numero": "7",
+    "rue": "Chemin des Feutres du Toulon",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1977537,
+    "longitude": 0.6987074,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 246,
+    "nom": "Point de collecte — Rue du Cluzeau",
+    "numero": "110",
+    "rue": "Rue du Cluzeau",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1978767,
+    "longitude": 0.7033403,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 247,
+    "nom": "Point de collecte — Impasse Louis Braille",
+    "numero": "34",
+    "rue": "Impasse Louis Braille",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1982422,
+    "longitude": 0.7297079,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 248,
+    "nom": "Point de collecte — Rue Combe des Dames",
+    "numero": "210",
+    "rue": "Rue Combe des Dames",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1983736,
+    "longitude": 0.7265743,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 249,
+    "nom": "Point de collecte — Rue des Retraites",
+    "numero": "5B",
+    "rue": "Rue des Retraites",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1985752,
+    "longitude": 0.683937,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 250,
+    "nom": "Point de collecte — Place Gour de l'Arche",
+    "numero": "9",
+    "rue": "Place Gour de l'Arche",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1990069,
+    "longitude": 0.6819947,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 251,
+    "nom": "Point de collecte — Rue des Entrepreneurs",
+    "numero": "23",
+    "rue": "Rue des Entrepreneurs",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1990735,
+    "longitude": 0.6831388,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 252,
+    "nom": "Point de collecte — ROUTE D'ANGOULEME",
+    "numero": "269",
+    "rue": "ROUTE D'ANGOULEME",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.1995574,
+    "longitude": 0.6803749,
+    "categorie": "point_apport",
+    "dechets": "OM",
+    "source": "guidedutri"
+  },
+  {
+    "id": 253,
+    "nom": "Point de collecte — Chemin des Feutres du Toulon",
+    "numero": "39",
+    "rue": "Chemin des Feutres du Toulon",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2005269,
+    "longitude": 0.6958496,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 254,
+    "nom": "Point de collecte — Chemin de la Monzie",
+    "numero": "14",
+    "rue": "Chemin de la Monzie",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2007249,
+    "longitude": 0.6988008,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 255,
+    "nom": "Point de collecte — Chemin de la Monzie",
+    "numero": "11",
+    "rue": "Chemin de la Monzie",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2008364,
+    "longitude": 0.6976927,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 256,
+    "nom": "Point de collecte — Allée Gilbert Privat",
+    "numero": "17",
+    "rue": "Allée Gilbert Privat",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2012455,
+    "longitude": 0.714456,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 257,
+    "nom": "Point de collecte — Route d'Agonac",
+    "numero": "14",
+    "rue": "Route d'Agonac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2017991,
+    "longitude": 0.6964983,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 258,
+    "nom": "Point de collecte — Route d'Agonac",
+    "numero": "32Q",
+    "rue": "Route d'Agonac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2025261,
+    "longitude": 0.6973975,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;BIO",
+    "source": "guidedutri"
+  },
+  {
+    "id": 259,
+    "nom": "Point de collecte — Route d'Agonac",
+    "numero": "30ter",
+    "rue": "Route d'Agonac",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2030318,
+    "longitude": 0.6965517,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 260,
+    "nom": "Point de collecte — Point de collecte",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2134766,
+    "longitude": 0.7513194,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "osm"
+  },
+  {
+    "id": 261,
+    "nom": "Borne textile",
+    "numero": "",
+    "rue": "Point de collecte",
+    "code_postal": "24000",
+    "ville": "Périgueux",
+    "latitude": 45.2171439,
+    "longitude": 0.7276227,
+    "categorie": "point_apport",
+    "dechets": "TEXTILE",
+    "source": "osm"
+  },
+  {
+    "id": 262,
+    "nom": "Point de collecte — Allée des Sauterelles",
+    "numero": "",
+    "rue": "Allée des Sauterelles",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1612645,
+    "longitude": 0.7256493,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 263,
+    "nom": "Point de collecte — Impasse des Falots",
+    "numero": "1",
+    "rue": "Impasse des Falots",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.164869,
+    "longitude": 0.726692,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 264,
+    "nom": "Point de collecte — Rue des Grives",
+    "numero": "19",
+    "rue": "Rue des Grives",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1697178,
+    "longitude": 0.7329788,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 265,
+    "nom": "Point de collecte — Impasse du Parc Prompsault 2",
+    "numero": "",
+    "rue": "Impasse du Parc Prompsault 2",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1712773,
+    "longitude": 0.7288124,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 266,
+    "nom": "Point de collecte — Rue Paul Toubet",
+    "numero": "",
+    "rue": "Rue Paul Toubet",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1715876,
+    "longitude": 0.7347174,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 267,
+    "nom": "Point de collecte — Impasse du Parc Prompsault 1",
+    "numero": "",
+    "rue": "Impasse du Parc Prompsault 1",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1728026,
+    "longitude": 0.7269398,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 268,
+    "nom": "Point de collecte — Rue de la Mairie",
+    "numero": "",
+    "rue": "Rue de la Mairie",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1759394,
+    "longitude": 0.7250138,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 269,
+    "nom": "Point de collecte — Route de Pommier",
+    "numero": "5",
+    "rue": "Route de Pommier",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1767776,
+    "longitude": 0.7316639,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 270,
+    "nom": "Point de collecte — Cours Saint-Georges",
+    "numero": "",
+    "rue": "Cours Saint-Georges",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1773808,
+    "longitude": 0.7303236,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 271,
+    "nom": "Point de collecte — Rue des Ecoles",
+    "numero": "",
+    "rue": "Rue des Ecoles",
+    "code_postal": "24660",
+    "ville": "Sanilhac",
+    "latitude": 45.1778272,
+    "longitude": 0.7274161,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 272,
+    "nom": "Point de collecte — PLAINE DES JEUX",
+    "numero": "",
+    "rue": "PLAINE DES JEUX",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1861956,
+    "longitude": 0.7483516,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 273,
+    "nom": "Point de collecte — bis, Rue des Tulipes",
+    "numero": "30",
+    "rue": "bis, Rue des Tulipes",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1862941,
+    "longitude": 0.7514667,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 274,
+    "nom": "Point de collecte — Chemin de Degain",
+    "numero": "",
+    "rue": "Chemin de Degain",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1873401,
+    "longitude": 0.7517056,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 275,
+    "nom": "Point de collecte — Rue Félix Gadaud",
+    "numero": "",
+    "rue": "Rue Félix Gadaud",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1880266,
+    "longitude": 0.7543909,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 276,
+    "nom": "Point de collecte — Rue des Jardins",
+    "numero": "",
+    "rue": "Rue des Jardins",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1886005,
+    "longitude": 0.7423952,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 277,
+    "nom": "Point de collecte — Avenue Joseph Dauriac",
+    "numero": "",
+    "rue": "Avenue Joseph Dauriac",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1890988,
+    "longitude": 0.7516502,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 278,
+    "nom": "Point de collecte — Rue des Mimosas",
+    "numero": "",
+    "rue": "Rue des Mimosas",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1898785,
+    "longitude": 0.728346,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 279,
+    "nom": "Point de collecte — Rue des Charmilles",
+    "numero": "6",
+    "rue": "Rue des Charmilles",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1900846,
+    "longitude": 0.7473872,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 280,
+    "nom": "Point de collecte — Rue des Sports",
+    "numero": "",
+    "rue": "Rue des Sports",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1901535,
+    "longitude": 0.7374692,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 281,
+    "nom": "Point de collecte — Rue des Charmilles",
+    "numero": "",
+    "rue": "Rue des Charmilles",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1908538,
+    "longitude": 0.7468676,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 282,
+    "nom": "Point de collecte — Rue des Violettes",
+    "numero": "",
+    "rue": "Rue des Violettes",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1910154,
+    "longitude": 0.7575938,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 283,
+    "nom": "Point de collecte — Rue des Ecoles",
+    "numero": "",
+    "rue": "Rue des Ecoles",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1910449,
+    "longitude": 0.7425239,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 284,
+    "nom": "Point de collecte — Rue des Pâquerettes",
+    "numero": "30",
+    "rue": "Rue des Pâquerettes",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1917534,
+    "longitude": 0.7337049,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 285,
+    "nom": "Point de collecte — Rue des Roses",
+    "numero": "45",
+    "rue": "Rue des Roses",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1922536,
+    "longitude": 0.7359579,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 286,
+    "nom": "Point de collecte — Rue des Roses",
+    "numero": "",
+    "rue": "Rue des Roses",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1929793,
+    "longitude": 0.735019,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 287,
+    "nom": "Point de collecte — Rue des Roses",
+    "numero": "7",
+    "rue": "Rue des Roses",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1937567,
+    "longitude": 0.7332214,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 288,
+    "nom": "Point de collecte — RUE DE L'ANCIENNE EGLISE",
+    "numero": "",
+    "rue": "RUE DE L'ANCIENNE EGLISE",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1940281,
+    "longitude": 0.7794416,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 289,
+    "nom": "Point de collecte — Avenue Franconi",
+    "numero": "34",
+    "rue": "Avenue Franconi",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1940769,
+    "longitude": 0.7383722,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 290,
+    "nom": "Point de collecte — Rue Anatole France",
+    "numero": "",
+    "rue": "Rue Anatole France",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1945073,
+    "longitude": 0.7737445,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 291,
+    "nom": "Point de collecte — Rue Anatole France",
+    "numero": "",
+    "rue": "Rue Anatole France",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1946298,
+    "longitude": 0.7758837,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 292,
+    "nom": "Point de collecte — Rue des Bleuets",
+    "numero": "18",
+    "rue": "Rue des Bleuets",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1947057,
+    "longitude": 0.734295,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 293,
+    "nom": "Point de collecte — Rue des Menestriers du Périgord",
+    "numero": "6",
+    "rue": "Rue des Menestriers du Périgord",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1949521,
+    "longitude": 0.7389631,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 294,
+    "nom": "Point de collecte — Place Napoléon Magne",
+    "numero": "",
+    "rue": "Place Napoléon Magne",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1953475,
+    "longitude": 0.7799095,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 295,
+    "nom": "Point de collecte — Rue Eugène Leroy",
+    "numero": "",
+    "rue": "Rue Eugène Leroy",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1955459,
+    "longitude": 0.7786615,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 296,
+    "nom": "Point de collecte — Rue Emile Zola",
+    "numero": "",
+    "rue": "Rue Emile Zola",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1962851,
+    "longitude": 0.7797855,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 297,
+    "nom": "Point de collecte — Avenue Georges Pompidou",
+    "numero": "",
+    "rue": "Avenue Georges Pompidou",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1964339,
+    "longitude": 0.7369392,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 298,
+    "nom": "Point de collecte — Rue des Marguerites",
+    "numero": "2",
+    "rue": "Rue des Marguerites",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.196487,
+    "longitude": 0.7372144,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 299,
+    "nom": "Point de collecte — Rue des Oeillets",
+    "numero": "11",
+    "rue": "Rue des Oeillets",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.19672,
+    "longitude": 0.7384268,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 300,
+    "nom": "Point de collecte — Avenue de la Libération",
+    "numero": "",
+    "rue": "Avenue de la Libération",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.1977502,
+    "longitude": 0.7798004,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 301,
+    "nom": "Déchèterie de Trélissac (Les Garennes)",
+    "numero": "",
+    "rue": "Les Garennes",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2018,
+    "longitude": 0.7895,
+    "categorie": "dechetterie",
+    "dechets": "",
+    "source": "smd3"
+  },
+  {
+    "id": 302,
+    "nom": "Point de collecte — ROUTE DES GRANDS BRUTS",
+    "numero": "",
+    "rue": "ROUTE DES GRANDS BRUTS",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2027571,
+    "longitude": 0.7676797,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 303,
+    "nom": "Point de collecte — Chemin du Bois de la Mothe",
+    "numero": "",
+    "rue": "Chemin du Bois de la Mothe",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2030866,
+    "longitude": 0.7786398,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 304,
+    "nom": "Point de collecte — Route du Pouyault",
+    "numero": "",
+    "rue": "Route du Pouyault",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2052786,
+    "longitude": 0.7775117,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 305,
+    "nom": "Point de collecte — Rue Saint-Exupéry",
+    "numero": "5",
+    "rue": "Rue Saint-Exupéry",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.206092,
+    "longitude": 0.7469318,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 306,
+    "nom": "Point de collecte — Rue Henri Guillaumet",
+    "numero": "",
+    "rue": "Rue Henri Guillaumet",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2065173,
+    "longitude": 0.7489881,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE",
+    "source": "guidedutri"
+  },
+  {
+    "id": 307,
+    "nom": "Point de collecte — Rue de la Liberté",
+    "numero": "",
+    "rue": "Rue de la Liberté",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2066239,
+    "longitude": 0.7751745,
+    "categorie": "point_apport",
+    "dechets": "OM;REC;VERRE;CARTON",
+    "source": "guidedutri"
+  },
+  {
+    "id": 308,
+    "nom": "Point de collecte — Rue du Clos de la Mothe",
+    "numero": "",
+    "rue": "Rue du Clos de la Mothe",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2071483,
+    "longitude": 0.7774102,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 309,
+    "nom": "Point de collecte — Route de la Jarthe",
+    "numero": "17",
+    "rue": "Route de la Jarthe",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2095308,
+    "longitude": 0.7543618,
+    "categorie": "point_apport",
+    "dechets": "OM;REC",
+    "source": "guidedutri"
+  },
+  {
+    "id": 310,
+    "nom": "Point de collecte — Route de Paris",
+    "numero": "42",
+    "rue": "Route de Paris",
+    "code_postal": "24750",
+    "ville": "Trélissac",
+    "latitude": 45.2139431,
+    "longitude": 0.751608,
+    "categorie": "point_apport",
+    "dechets": "VERRE",
+    "source": "guidedutri"
+  }
 ];
 
-// ---------------------------------------------------------------
-// SIGNALEMENT DE PROBLEME : lien vers un Google Form pre-rempli.
-// Remplace ces valeurs par les tiennes une fois le formulaire cree
-// (Google Form -> 3 points -> "Obtenir le lien prerempli").
-// ---------------------------------------------------------------
 const GOOGLE_FORM = {
   baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfXcceLSn-s32U9gohMG2yjgA0oQuMfIysUDMOXdXuI9wD-yw/viewform",
-  entryLieu: "entry.237831157",   // champ "Lieu concerne"
-  entryGps: "entry.348540032"     // champ "Coordonnees GPS"
+  entryLieu: "entry.237831157",
+  entryGps: "entry.348540032"
 };
 
 function ouvrirSignalement(nom, lat, lon) {
   const url = new URL(GOOGLE_FORM.baseUrl);
   url.searchParams.set(GOOGLE_FORM.entryLieu, nom);
   url.searchParams.set(GOOGLE_FORM.entryGps, `${lat.toFixed(5)},${lon.toFixed(5)}`);
-  window.open(url.toString(), '_blank');
+  window.open(url.toString(), "_blank");
 }
 
-// ---------------------------------------------------------------
-// AJOUT D'UN POINT D'APPORT MANQUANT : formulaire distinct du
-// signalement de probleme. A remplacer une fois le formulaire cree
-// (memes etapes que GOOGLE_FORM ci-dessus).
-// ---------------------------------------------------------------
 const GOOGLE_FORM_NOUVEAU_POINT = {
   baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdgF5DXlfxJdlNgHBDPCZoS8xtzcbNDNX-EenIEdCu3yXQl-A/viewform",
-  entryAdresse: "entry.632062811",   // champ "Adresse ou repere"
-  entryCommune: "entry.2103358057",  // champ "Commune"
-  entryTypes: "entry.1290561210",    // champ "Types de dechets acceptes" (case a cocher, valeurs multiples possibles)
-  entryCommentaire: "entry.2079166645", // champ "Commentaire"
-  entryGps: "entry.1602849538"       // champ "Coordonnees GPS"
+  entryAdresse: "entry.632062811",
+  entryCommune: "entry.2103358057",
+  entryTypes: "entry.1290561210",
+  entryCommentaire: "entry.2079166645",
+  entryGps: "entry.1602849538"
 };
 
 function ouvrirAjoutPoint() {
   if (!userPosition) return;
   const url = new URL(GOOGLE_FORM_NOUVEAU_POINT.baseUrl);
   url.searchParams.set(GOOGLE_FORM_NOUVEAU_POINT.entryGps, `${userPosition.lat.toFixed(5)},${userPosition.lon.toFixed(5)}`);
-  window.open(url.toString(), '_blank');
+  window.open(url.toString(), "_blank");
 }
 
-// Canisites de Perigueux (source : perigueux.fr, coordonnees approximatives
-// des squares/places -- a affiner sur place si besoin d'une precision au metre pres)
 const canisites = [
   { id: 1, nom: "Canisite - Square Jean-Jaurès", rue: "Square Jean-Jaurès (derrière le Théâtre)", code_postal: "24000", ville: "Périgueux", latitude: 45.1848451, longitude: 0.7153012 },
   { id: 2, nom: "Canisite - Place Saint-Martin", rue: "Place Saint-Martin", code_postal: "24000", ville: "Périgueux", latitude: 45.187725, longitude: 0.711561 },
@@ -363,9 +4305,6 @@ const typeLabels = {
   PILES: "Piles et batteries"
 };
 
-// ---------------------------------------------------------------
-// ETAPE 2 : CALCULER LA DISTANCE ENTRE DEUX POINTS GPS (Haversine)
-// ---------------------------------------------------------------
 function distanceEnMetres(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const toRad = (deg) => deg * Math.PI / 180;
@@ -378,52 +4317,57 @@ function distanceEnMetres(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// ---------------------------------------------------------------
-// ETAPE 3 : GEOLOCALISER L'UTILISATEUR
-// ---------------------------------------------------------------
+const FALLBACK = { lat: 45.1841, lon: 0.7214 };
 let userPosition = null;
 let currentRadius = 500;
-let currentCategory = 'dechets';
-let activeTypes = new Set(['OM', 'REC', 'VERRE', 'CARTON', 'BIO', 'DECHETTERIE', 'TEXTILES', 'PILES']);
+let currentCategory = "dechets";
+let activeTypes = new Set(["OM", "REC", "VERRE", "CARTON", "BIO", "DECHETTERIE", "TEXTILE", "PILES"]);
 let map, userMarker;
 let markers = [];
 
-const statusEl = document.getElementById('status');
-const resultsEl = document.getElementById('results');
-const dechetsFiltersEl = document.getElementById('dechets-filters');
-const ajouterPointBtn = document.getElementById('ajouter-point-btn');
+const statusEl = document.getElementById("status");
+const resultsEl = document.getElementById("results");
+const dechetsFiltersEl = document.getElementById("dechets-filters");
+const ajouterPointBtn = document.getElementById("ajouter-point-btn");
 
 function initMap(lat, lon) {
-  map = L.map('map').setView([lat, lon], 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-
+  if (map) {
+    map.setView([lat, lon], 15);
+    if (userMarker) map.removeLayer(userMarker);
+  } else {
+    map = L.map("map").setView([lat, lon], 15);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+  }
   userMarker = L.circleMarker([lat, lon], {
-    radius: 8, color: '#1d4ed8', fillColor: '#3b82f6', fillOpacity: 1
+    radius: 8, color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 1
   }).addTo(map).bindPopup("Toi");
 }
 
 function iconPourCategorie(categorie, dechetsStr) {
-  let emoji = '♻️';
-  if (categorie === 'toilette') emoji = '🚻';
-  else if (categorie === 'dechetterie') emoji = '🏭';
-  else if (categorie === 'canisite') emoji = '🐾';
-  else if (dechetsStr === 'TEXTILES') emoji = '👕';
-  else if (dechetsStr === 'PILES') emoji = '🔋';
+  let emoji = "♻️";
+  if (categorie === "toilette") emoji = "🚻";
+  else if (categorie === "dechetterie") emoji = "🏭";
+  else if (categorie === "canisite") emoji = "🐾";
+  else if (dechetsStr === "TEXTILE") emoji = "👕";
+  else if (dechetsStr === "PILES") emoji = "🔋";
+  else if (dechetsStr === "BIO") emoji = "🍃";
+  else if (dechetsStr && dechetsStr.split(";").includes("VERRE") && !dechetsStr.split(";").includes("OM")) emoji = "🟩";
   return L.divIcon({
     html: `<div style="font-size:22px; transform: translate(-50%, -100%);">${emoji}</div>`,
-    className: '',
+    className: "",
     iconSize: [0, 0]
   });
 }
 
 function getResultatsFiltres() {
-  if (currentCategory === 'toilettes') {
+  if (!userPosition) return [];
+  if (currentCategory === "toilettes") {
     return toilettes
       .map(t => ({
         ...t,
-        categorie: 'toilette',
+        categorie: "toilette",
         nom: t.type,
         distance: distanceEnMetres(userPosition.lat, userPosition.lon, t.latitude, t.longitude)
       }))
@@ -431,31 +4375,41 @@ function getResultatsFiltres() {
       .sort((a, b) => a.distance - b.distance);
   }
 
-  if (currentCategory === 'canisites') {
+  if (currentCategory === "canisites") {
     return canisites
-      .map(c => ({ ...c, categorie: 'canisite', distance: distanceEnMetres(userPosition.lat, userPosition.lon, c.latitude, c.longitude) }))
+      .map(c => ({
+        ...c,
+        categorie: "canisite",
+        distance: distanceEnMetres(userPosition.lat, userPosition.lon, c.latitude, c.longitude)
+      }))
       .filter(c => c.distance <= currentRadius)
       .sort((a, b) => a.distance - b.distance);
   }
 
-  // categorie "dechets" : on combine points d'apport (filtres par type
-  // coche) et dechetteries (si la puce DECHETTERIE est active)
   return dechets
-    .map(d => ({ ...d, distance: distanceEnMetres(userPosition.lat, userPosition.lon, d.latitude, d.longitude) }))
+    .map(d => ({
+      ...d,
+      distance: distanceEnMetres(userPosition.lat, userPosition.lon, d.latitude, d.longitude)
+    }))
     .filter(d => d.distance <= currentRadius)
     .filter(d => {
-      if (d.categorie === 'dechetterie') return activeTypes.has('DECHETTERIE');
-      // point_apport : garder si au moins un de ses types est coche
-      const typesDuPoint = d.dechets.split(';').filter(Boolean);
+      if (d.categorie === "dechetterie") return activeTypes.has("DECHETTERIE");
+      const typesDuPoint = (d.dechets || "").split(";").filter(Boolean);
       return typesDuPoint.some(code => activeTypes.has(code));
     })
     .sort((a, b) => a.distance - b.distance);
 }
 
+function formatDistance(m) {
+  if (m >= 1000) return (m / 1000).toFixed(m >= 10000 ? 0 : 1).replace(".", ",") + " km";
+  return Math.round(m) + " m";
+}
+
 function afficherResultats() {
+  if (!map) return;
   markers.forEach(m => map.removeLayer(m));
   markers = [];
-  resultsEl.innerHTML = '';
+  resultsEl.innerHTML = "";
 
   const resultats = getResultatsFiltres();
 
@@ -465,68 +4419,82 @@ function afficherResultats() {
   }
 
   resultats.forEach(r => {
-    const card = document.createElement('div');
-    card.className = 'result-card ' + (r.categorie || '');
+    const card = document.createElement("div");
+    card.className = "result-card " + (r.categorie || "");
 
-    let tagsHtml = '';
-    if (r.categorie === 'point_apport') {
-      const codes = r.dechets.split(';').filter(Boolean);
-      tagsHtml = '<div class="tags">' + codes.map(c => `<span class="tag">${typeLabels[c] || c}</span>`).join('') + '</div>';
-    } else if (r.categorie === 'dechetterie') {
+    let tagsHtml = "";
+    if (r.categorie === "point_apport") {
+      const codes = (r.dechets || "").split(";").filter(Boolean);
+      tagsHtml = '<div class="tags">' + codes.map(c => `<span class="tag">${typeLabels[c] || c}</span>`).join("") + "</div>";
+    } else if (r.categorie === "dechetterie") {
       tagsHtml = '<div class="tags"><span class="tag">Accepte tous les déchets</span></div>';
     }
 
-    const nomAffiche = r.categorie === 'toilette' ? r.type : r.nom;
+    const nomAffiche = r.categorie === "toilette" ? r.type : r.nom;
     const adresse = r.numero ? `${r.numero} ${r.rue}, ${r.code_postal} ${r.ville}` : `${r.rue}, ${r.code_postal} ${r.ville}`;
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${r.latitude},${r.longitude}`;
 
     card.innerHTML = `
       <div class="type">${nomAffiche}</div>
       <div class="adresse">${adresse}</div>
       ${tagsHtml}
       <div class="card-footer">
-        <div class="distance">${Math.round(r.distance)} m</div>
+        <div class="distance">${formatDistance(r.distance)}</div>
+        <a class="itineraire-btn" href="${mapsUrl}" target="_blank" rel="noopener">Itinéraire</a>
         <button class="report-btn">⚠️ Signaler un problème</button>
       </div>
     `;
-    card.querySelector('.report-btn').addEventListener('click', () => {
+    card.querySelector(".report-btn").addEventListener("click", (ev) => {
+      ev.stopPropagation();
       ouvrirSignalement(nomAffiche, r.latitude, r.longitude);
+    });
+    card.querySelector(".itineraire-btn").addEventListener("click", (ev) => ev.stopPropagation());
+    card.addEventListener("click", () => {
+      map.setView([r.latitude, r.longitude], 17);
+      const mk = markers.find(m => m._latlng && Math.abs(m._latlng.lat - r.latitude) < 1e-7);
+      if (mk) mk.openPopup();
     });
     resultsEl.appendChild(card);
 
     const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie, r.dechets) })
       .addTo(map)
-      .bindPopup(`${nomAffiche}<br>${Math.round(r.distance)} m`);
+      .bindPopup(`<strong>${nomAffiche}</strong><br>${adresse}<br>${formatDistance(r.distance)}`);
     markers.push(marker);
   });
 }
 
-function onSuccess(position) {
-  userPosition = { lat: position.coords.latitude, lon: position.coords.longitude };
-  statusEl.textContent = "Position trouvée ✓";
-  initMap(userPosition.lat, userPosition.lon);
+function pret(lat, lon, label) {
+  userPosition = { lat, lon };
+  statusEl.textContent = label;
+  initMap(lat, lon);
   afficherResultats();
 }
 
+function onSuccess(position) {
+  pret(position.coords.latitude, position.coords.longitude, "Position trouvée ✓");
+}
+
 function onError(err) {
-  let message;
-  if (err.code === 1) {
-    message = "Localisation refusée pour ce site. Va dans les réglages du site (icône à gauche de l'adresse) et autorise la localisation.";
-  } else if (err.code === 2) {
-    message = "Position indisponible. Vérifie que le GPS est activé et que tu n'es pas en intérieur profond.";
-  } else if (err.code === 3) {
-    message = "La localisation prend trop de temps. Nouvelle tentative...";
+  if (err.code === 3) {
+    statusEl.textContent = "La localisation prend trop de temps. Nouvelle tentative...";
     navigator.geolocation.getCurrentPosition(onSuccess, onFinalError, {
       enableHighAccuracy: true, timeout: 20000, maximumAge: 0
     });
     return;
-  } else {
-    message = "Erreur de localisation inconnue.";
   }
-  statusEl.textContent = message;
+  let message;
+  if (err.code === 1) {
+    message = "Localisation refusée. Carte centrée sur Périgueux — autorise la localisation pour des distances exactes.";
+  } else if (err.code === 2) {
+    message = "Position indisponible. Carte centrée sur Périgueux.";
+  } else {
+    message = "Erreur de localisation. Carte centrée sur Périgueux.";
+  }
+  pret(FALLBACK.lat, FALLBACK.lon, message);
 }
 
-function onFinalError(err) {
-  statusEl.textContent = "Impossible d'obtenir ta position après plusieurs tentatives. Vérifie le GPS et les autorisations du site.";
+function onFinalError() {
+  pret(FALLBACK.lat, FALLBACK.lon, "Impossible d'obtenir ta position. Carte centrée sur Périgueux.");
 }
 
 if (navigator.geolocation) {
@@ -534,50 +4502,45 @@ if (navigator.geolocation) {
     enableHighAccuracy: true, timeout: 8000, maximumAge: 0
   });
 } else {
-  statusEl.textContent = "La géolocalisation n'est pas supportée par ce navigateur.";
+  pret(FALLBACK.lat, FALLBACK.lon, "Géolocalisation non supportée. Carte centrée sur Périgueux.");
 }
 
-// Boutons de rayon
-document.querySelectorAll('.radius-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.radius-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+document.querySelectorAll(".radius-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".radius-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
     currentRadius = parseInt(btn.dataset.radius, 10);
     if (userPosition) afficherResultats();
   });
 });
 
-// Onglets de categorie
-document.querySelectorAll('.cat-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
+document.querySelectorAll(".cat-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".cat-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
     currentCategory = tab.dataset.cat;
-    dechetsFiltersEl.classList.toggle('visible', currentCategory === 'dechets');
-    ajouterPointBtn.classList.toggle('visible', currentCategory === 'dechets');
+    dechetsFiltersEl.classList.toggle("visible", currentCategory === "dechets");
+    ajouterPointBtn.classList.toggle("visible", currentCategory === "dechets");
     if (userPosition) afficherResultats();
   });
 });
 
-// Etat initial du bouton d'ajout (l'onglet Dechets est actif par defaut)
-ajouterPointBtn.classList.toggle('visible', currentCategory === 'dechets');
-ajouterPointBtn.addEventListener('click', ouvrirAjoutPoint);
+ajouterPointBtn.classList.toggle("visible", currentCategory === "dechets");
+ajouterPointBtn.addEventListener("click", ouvrirAjoutPoint);
 
-// Puces de type de dechet
-document.querySelectorAll('.type-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
+document.querySelectorAll(".type-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
     const type = chip.dataset.type;
     if (activeTypes.has(type)) {
       activeTypes.delete(type);
-      chip.classList.remove('active');
+      chip.classList.remove("active");
     } else {
       activeTypes.add(type);
-      chip.classList.add('active');
+      chip.classList.add("active");
     }
     if (userPosition) afficherResultats();
   });
 });
 </script>
-
 </body>
 </html>
