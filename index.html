@@ -192,7 +192,7 @@
 
 <div id="dechets-filters" class="visible">
   <span class="type-chip active" data-type="OM">Ordures ménagères</span>
-  <span class="type-chip active" data-type="REC">Recyclables</span>
+  <span class="type-chip active" data-type="REC">Emballages &amp; papiers</span>
   <span class="type-chip active" data-type="VERRE">Verre</span>
   <span class="type-chip carton-chip active" data-type="CARTON">📦 Grand carton</span>
   <span class="type-chip active" data-type="BIO">Biodéchets</span>
@@ -213,8 +213,8 @@
 <button id="ajouter-point-btn" class="visible">➕ Un point d'apport manque ici ?</button>
 <div id="results"></div>
 <footer class="data-note">
-  Points d'apport : guidedutri.fr (carte SMD3 / Citeo) + OpenStreetMap.
-  Déchèteries complémentaires : smd3.fr. Les bornes biodéchets SMD3 s'ouvrent avec un badge.
+  Points d'apport et déchèteries : données SMD3 / Citeo Guide du Tri (extraction du 27/09/2026, 43 communes du Grand Périgueux).
+  Bornes textile, piles et composteurs : OpenStreetMap et partenaires. Les bornes ordures ménagères et biodéchets SMD3 s'ouvrent avec un badge.
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -226,7 +226,7 @@ const toilettes = [
   { id: 4, numero: "1", rue: "Boulevard Georges Saumande", code_postal: "24000", ville: "Périgueux", latitude: 45.1830, longitude: 0.7160, type: "Toilettes publiques" }
 ];
 
-const dechets = [
+let dechets = [
   {
     "id": 1,
     "nom": "Point de collecte — Impasse Du Lac Blanc",
@@ -4288,6 +4288,44 @@ function ouvrirAjoutPoint() {
   window.open(url.toString(), "_blank");
 }
 
+// Points d'apport SMD3 officiels (Guide du Tri) : chargés depuis data/.
+// Ils remplacent les points guidedutri/smd3 de la liste ci-dessus, qui reste en secours
+// si le fichier ne peut pas être chargé (ex. page ouverte en file://).
+const FICHIER_PAV_SMD3 = "data/pav-smd3-grand-perigueux.json";
+
+function chargerPointsSmd3() {
+  fetch(FICHIER_PAV_SMD3)
+    .then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(data => {
+      const officiels = data.points.map(p => ({
+        id: p.id,
+        nom: p.categorie === "dechetterie" ? `Déchèterie de ${p.commune}` : `Point de collecte — ${p.adresse}`,
+        numero: "",
+        rue: p.adresse,
+        code_postal: p.code_postal || "",
+        ville: p.commune,
+        latitude: p.lat,
+        longitude: p.lon,
+        categorie: p.categorie,
+        dechets: p.categorie === "dechetterie" ? "" : p.flux.join(";"),
+        source: "smd3-guidedutri"
+      }));
+      // On garde seulement les compléments hors SMD3 (textile, piles, composteurs…) ;
+      // les points OSM OM/recyclables/verre/carton sont déjà couverts par les données officielles.
+      const fluxSmd3 = ["OM", "REC", "VERRE", "CARTON"];
+      const complements = dechets.filter(d =>
+        d.source !== "guidedutri" && d.source !== "smd3" &&
+        (d.dechets || "").split(";").filter(Boolean).some(code => !fluxSmd3.includes(code))
+      );
+      dechets = officiels.concat(complements);
+      if (userPosition) afficherResultats();
+    })
+    .catch(err => console.warn("Points SMD3 non chargés, liste intégrée utilisée :", err));
+}
+
 const canisites = [
   { id: 1, nom: "Canisite - Square Jean-Jaurès", rue: "Square Jean-Jaurès (derrière le Théâtre)", code_postal: "24000", ville: "Périgueux", latitude: 45.1848451, longitude: 0.7153012 },
   { id: 2, nom: "Canisite - Place Saint-Martin", rue: "Place Saint-Martin", code_postal: "24000", ville: "Périgueux", latitude: 45.187725, longitude: 0.711561 },
@@ -4297,7 +4335,7 @@ const canisites = [
 
 const typeLabels = {
   OM: "Ordures ménagères",
-  REC: "Recyclables",
+  REC: "Emballages & papiers",
   VERRE: "Verre",
   CARTON: "Grand carton",
   BIO: "Biodéchets",
@@ -4430,8 +4468,12 @@ function afficherResultats() {
       tagsHtml = '<div class="tags"><span class="tag">Accepte tous les déchets</span></div>';
     }
 
+    const fluxPopup = r.categorie === "point_apport"
+      ? (r.dechets || "").split(";").filter(Boolean).map(c => typeLabels[c] || c).join(", ") + "<br>"
+      : "";
     const nomAffiche = r.categorie === "toilette" ? r.type : r.nom;
-    const adresse = r.numero ? `${r.numero} ${r.rue}, ${r.code_postal} ${r.ville}` : `${r.rue}, ${r.code_postal} ${r.ville}`;
+    const ville = r.code_postal ? `${r.code_postal} ${r.ville}` : r.ville;
+    const adresse = r.numero ? `${r.numero} ${r.rue}, ${ville}` : `${r.rue}, ${ville}`;
     const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${r.latitude},${r.longitude}`;
 
     card.innerHTML = `
@@ -4458,7 +4500,7 @@ function afficherResultats() {
 
     const marker = L.marker([r.latitude, r.longitude], { icon: iconPourCategorie(r.categorie, r.dechets) })
       .addTo(map)
-      .bindPopup(`<strong>${nomAffiche}</strong><br>${adresse}<br>${formatDistance(r.distance)}`);
+      .bindPopup(`<strong>${nomAffiche}</strong><br>${adresse}<br>${fluxPopup}${formatDistance(r.distance)}`);
     markers.push(marker);
   });
 }
@@ -4496,6 +4538,8 @@ function onError(err) {
 function onFinalError() {
   pret(FALLBACK.lat, FALLBACK.lon, "Impossible d'obtenir ta position. Carte centrée sur Périgueux.");
 }
+
+chargerPointsSmd3();
 
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(onSuccess, onError, {
